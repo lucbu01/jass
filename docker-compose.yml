@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  ppgadmin:
+    container_name: jass-pgadmin
+    image: dpage/pgadmin4:4.27
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.ch
+      - PGADMIN_DEFAULT_PASSWORD=secret
+    ports:
+      - "5050:80"
+    networks:
+      - jass
+    volumes:
+       - pgadmin-data:/root/.pgadmin
+    depends_on:
+      - postgres
+
+  postgres:
+    container_name: jass-postgres
+    image: postgres:13-alpine
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=ecamp
+    ports:
+      - "5432:5432"
+    networks:
+      - jass
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+
+networks:
+  jass:
+    driver: bridge
+
+volumes:
+  postgres-db:
+  pgadmin-data:
