@@ -43,6 +43,7 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
+              "outputPath": "../backend/src/main/resources/static",
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
