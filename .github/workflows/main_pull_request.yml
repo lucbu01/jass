@@ -1,7 +1,7 @@
 name: build
 
 on:
-  push:
+  pull_request:
     branches: [ main ]
 
 jobs:
@@ -31,17 +31,10 @@ jobs:
       run: (cd backend; ./gradlew assemble)
     - name: Test server
       run: (cd backend; ./gradlew test)
-    - name: Publish to Docker
-      uses: docker/build-push-action@v1
-      with:
-          username: ${{ secrets.DOCKER_USER }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: lucbu01/jass
-          tag_with_ref: true
     - name: Publish to Heroku
       uses: akhileshns/heroku-deploy@v3.6.8
       with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: "bbzw-jass" 
+          heroku_app_name: "bbzw-jass-dev" 
           heroku_email: ${{secrets.HEROKU_EMAIL}}
           usedocker: true
