@@ -9,3 +9,5 @@ Eine Webseite, auf der 4 Spieler online miteinander ein Jass Spiel (Schieber) sp
  - Angular Frontend
  - evtl. Datenbank (Postgres)
  
+## Demo auf Heroku
+https://bbzw-jass.herokuapp.com/
