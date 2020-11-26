@@ -6,13 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ch.bbzw.jass.model.JassUser;
-import ch.bbzw.jass.repository.UserRepository;
+import ch.bbzw.jass.repository.JassUserRepository;
 
 @Service
-public class UserService {
+public class JassUserService {
 	
 	@Autowired
-	UserRepository userRepository;
+	JassUserRepository userRepository;
 
 	public UUID setName(String name) {
 		return userRepository.save(new JassUser(name)).getId();
