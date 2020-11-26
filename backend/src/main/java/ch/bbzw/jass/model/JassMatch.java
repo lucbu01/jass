@@ -3,6 +3,8 @@ package ch.bbzw.jass.model;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.ManyToOne;
@@ -29,8 +31,16 @@ public class JassMatch {
 	@OneToMany
 	private List<JassRound> round;
 
-	public JassMatch(JassGame game, Integer index) {
+	@Enumerated(EnumType.STRING)
+	private JassMatchType type;
+
+	@ManyToOne
+	private JassUser announcer;
+
+	public JassMatch(JassGame game, Integer index, JassMatchType type, JassUser announcer) {
 		this.game = game;
 		this.index = index;
+		this.type = type;
+		this.announcer = announcer;
 	}
 }

@@ -19,6 +19,6 @@ public enum JassValue {
 	private int position;
 	private int value;
 	private int valueTrump;
-	private int valueUpDown;
-	private int valueDownUp;
+	private int valueUpsideDown;
+	private int valueDownsideUp;
 }
