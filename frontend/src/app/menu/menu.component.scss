@@ -1,35 +1,9 @@
 .center
 {
-    height:90vh;
+    height:100%;
     width:100%;
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.card
-{
-    padding: 10px;
-    height:250px;
-    width:250px;
-    padding-top: 20px;
-    display:flex;
-    flex-direction:column;
-    position:relative;
-    box-shadow:  15px 15px 15px #e1e1e3, -15px -15px 30px #e1e1e3;
-    border-radius: 25px;
-}
-
-.label {
-    font-size: xx-large;
-    text-align: center;
-}
-
-.input {
-    font-size: xx-large;
-}
-
-.button {
-    font-size: xx-large;
-    border-radius: 15px;
+    background-color: green;
 }
