@@ -1,0 +1,17 @@
+<div class="center">
+    <mat-card>
+        <mat-card-header>
+          <mat-card-title>BBZW Jass</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <mat-form-field appearance="fill">
+                <mat-label>Name</mat-label>
+                <input matInput [(ngModel)]="name">
+            </mat-form-field>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button color="primary" (click)="create()">Spiel erstellen</button>
+          <button mat-button color="accent" (click)="join()">Spiel beitreten</button>
+        </mat-card-actions>
+      </mat-card>
+</div>
