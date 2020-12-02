@@ -18,6 +18,6 @@ public class JassIdenticationController {
 
 	@PostMapping("/api/name")
 	public @ResponseBody UUID setName(@RequestBody String name ) {
-		return userService.setName(name);
+		return userService.setName(name.replace("\"", ""));
 	}
 }
