@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import ch.bbzw.jass.service.UserService;
+import ch.bbzw.jass.service.JassUserService;
 
 @RestController
-public class IdenticationController {
+public class JassIdenticationController {
 	
 	@Autowired
-	UserService userService;
+	JassUserService userService;
 
 	@PostMapping("/api/name")
 	public @ResponseBody UUID setName(@RequestBody String name ) {
