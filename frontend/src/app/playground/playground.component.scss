@@ -53,10 +53,18 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
+    .title {
+        font-size: xx-large;
+    }
+
+    .name {
+        font-size: x-large;
+    }
+
+    .score {
+        font-size: x-large;
+        font-weight: bold;
+    }
 }
 
-.score {
-    display: flex;
-    justify-content: center;
-    font-weight: bold;
-}
