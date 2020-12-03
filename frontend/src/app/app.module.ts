@@ -12,11 +12,13 @@ import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
 import { HttpClientModule } from '@angular/common/http';
 import { WebSocketService } from './services/web-socket.service';
+import { PlaygroundComponent } from './playground/playground.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    MenuComponent
+    MenuComponent,
+    PlaygroundComponent
   ],
   imports: [
     BrowserModule,
