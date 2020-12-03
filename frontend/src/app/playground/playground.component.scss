@@ -1,10 +1,11 @@
 .grid-container {
-    height: 97%;
-    width: 98%;
+    height: 100%;
+    width: 100%;
     display: grid;
     grid-template-columns: auto 100px 100px 100px 100px 100px 100px 100px 100px 100px auto 300px;
     grid-template-rows: auto auto 150px;
     grid-gap: 10px;
+    background-color: #f8f8f8;
 }
 
 .grid-playground {
@@ -18,4 +19,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.score {
+    display: flex;
+    justify-content: center;
+    font-weight: bold;
 }
