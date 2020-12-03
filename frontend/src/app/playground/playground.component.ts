@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Card } from 'src/model/card';
 
 @Component({
   selector: 'app-playground',
@@ -12,6 +13,7 @@ export class PlaygroundComponent implements OnInit {
   playerName4 = 'player4';
   countTeam1 = 'count1';
   countTeam2 = 'count2';
+  cards: Card[] = [];
 
   constructor() { }
 
