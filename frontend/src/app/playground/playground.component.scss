@@ -11,6 +11,16 @@
 .grid-playground {
     grid-column: 1 / span 11;
     grid-row: 1 / span 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.carpet {
+    width: 75%;
+    height: 75%;
+    background-color: #349255;
+    border-radius: 50px;
 }
 
 .grid-count {
