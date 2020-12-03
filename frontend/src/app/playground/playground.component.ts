@@ -11,8 +11,8 @@ export class PlaygroundComponent implements OnInit {
   playerName2 = 'player2';
   playerName3 = 'player3';
   playerName4 = 'player4';
-  countTeam1 = 'count1';
-  countTeam2 = 'count2';
+  scoreTeam1 = '0';
+  scoreTeam2 = '0';
   cards: Card[] = [];
 
   constructor() { }
