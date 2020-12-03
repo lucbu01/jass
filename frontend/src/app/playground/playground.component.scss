@@ -1,0 +1,21 @@
+.grid-container {
+    height: 97%;
+    width: 98%;
+    display: grid;
+    grid-template-columns: auto 100px 100px 100px 100px 100px 100px 100px 100px 100px auto 300px;
+    grid-template-rows: auto auto 150px;
+    grid-gap: 10px;
+}
+
+.grid-playground {
+    grid-column: 1 / span 11;
+    grid-row: 1 / span 2;
+}
+
+.grid-count {
+    height:100%;
+    width:100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
