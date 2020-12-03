@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { WebSocketService } from '../services/web-socket.service';
 
 @Component({
   selector: 'app-menu',
@@ -9,22 +10,28 @@ import { HttpClient } from '@angular/common/http';
 export class MenuComponent implements OnInit {
   name = '';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private webSocketService: WebSocketService) { }
 
   ngOnInit(): void {
+    this.webSocketService.tryConnect().subscribe(result => console.log(`WebSocket connected: ${result}`));
+    this.webSocketService.event<string>('/user/private/name').subscribe(name => this.name = name);
   }
 
   create(): void {
-    this.createUuid();
+    this.setUsername();
   }
 
   join(): void {
-    this.createUuid();
+    this.setUsername();
   }
 
-  createUuid(): void {
-    this.http.post('/api/name', JSON.stringify(name)).subscribe(uuid => {
-      localStorage.setItem('uuid', JSON.stringify(uuid));
-    });
+  setUsername(): void {
+    if (this.webSocketService.connected) {
+      this.webSocketService.sendString('/private/name', this.name);
+    } else {
+      this.http.post<string>('/api/name', JSON.stringify(this.name)).subscribe(uuid => {
+        this.webSocketService.tryConnect(uuid).subscribe(result => console.log(`WebSocket connected: ${result}`));
+      });
+    }
   }
 }
