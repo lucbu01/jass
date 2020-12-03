@@ -1,4 +1,4 @@
-.grid-container {
+.grid-playground {
     height: 100%;
     width: 100%;
     display: grid;
@@ -8,7 +8,7 @@
     background-color: #f8f8f8;
 }
 
-.grid-playground {
+.playground {
     grid-column: 1 / span 11;
     grid-row: 1 / span 2;
     display: flex;
@@ -23,7 +23,7 @@
     border-radius: 50px;
 }
 
-.grid-count {
+.card {
     height:100%;
     width:100%;
     display: flex;
