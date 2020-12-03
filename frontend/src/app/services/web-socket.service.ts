@@ -3,6 +3,7 @@ import { EMPTY, Observable, of, ReplaySubject } from 'rxjs';
 import { first, map, multicast, refCount, share, switchMap } from 'rxjs/operators';
 import { RxStomp } from '@stomp/rx-stomp';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -30,8 +31,10 @@ export class WebSocketService implements OnDestroy {
           this.connectedUser = userId;
           observer.next(true);
           observer.complete();
-          window.addEventListener('online', this.onlineEventListener);
-          window.addEventListener('focus', this.onlineEventListener);
+          if (environment.production) {
+            window.addEventListener('online', this.onlineEventListener);
+            window.addEventListener('focus', this.onlineEventListener);
+          }
         });
         this.client.stompErrors$.pipe(first()).subscribe(() => {
           observer.next(false);

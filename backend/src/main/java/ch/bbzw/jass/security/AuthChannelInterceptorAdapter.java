@@ -31,9 +31,12 @@ public class AuthChannelInterceptorAdapter implements ChannelInterceptor {
 			List<String> authorization = accessor.getNativeHeader("user");
 
 			if (authorization != null && !authorization.isEmpty()) {
-				String user = authorization.get(0);
-				Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user, user));
-				accessor.setUser(auth);
+				String secret = authorization.get(0);
+				String[] authParts = secret.split(":");
+				if (authParts.length > 1) {					
+					Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authParts[0], authParts[1]));
+					accessor.setUser(auth);
+				}
 			}
 		}
 		return message;

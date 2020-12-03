@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import ch.bbzw.jass.model.JassUser;
@@ -25,9 +26,14 @@ public class JassUserService implements UserDetailsService {
 	
 	@Autowired
 	JassUserRepository userRepository;
+	
+	@Autowired
+	PasswordEncoder passwordEncoder;
 
-	public UUID setName(String name) {
-		return userRepository.save(new JassUser(name)).getId();
+	public String setName(String name) {
+		UUID password = UUID.randomUUID();
+		JassUser user = userRepository.save(new JassUser(name, passwordEncoder.encode(password.toString())));
+		return user.getId() + ":" + password;
 	}
 
 	@Override

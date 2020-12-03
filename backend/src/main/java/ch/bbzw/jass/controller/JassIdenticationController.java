@@ -1,7 +1,5 @@
 package ch.bbzw.jass.controller;
 
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +15,7 @@ public class JassIdenticationController {
 	JassUserService userService;
 
 	@PostMapping("/api/name")
-	public @ResponseBody UUID setName(@RequestBody String name ) {
-		return userService.setName(name.replace("\"", ""));
+	public @ResponseBody String setName(@RequestBody String name ) {
+		return "\"" +  userService.setName(name.replace("\"", "")) + "\"";
 	}
 }
