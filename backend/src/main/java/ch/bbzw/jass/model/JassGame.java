@@ -10,23 +10,29 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 public class JassGame {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
+	
+	private Boolean started;
 
 	@OneToMany(mappedBy = "game")
-	private List<JassTeam> team = new ArrayList<>();
+	private List<JassTeam> teams = new ArrayList<>();
 
 	@OneToMany(mappedBy = "game")
 	private List<JassMatch> matches = new ArrayList<>();
+	
+	public List<JassUser> getAllPlayers() {
+		List<JassUser> players = new ArrayList<>();
+		teams.stream().forEach(team -> players.addAll(team.getUsers()));
+		return players;
+	}
 }

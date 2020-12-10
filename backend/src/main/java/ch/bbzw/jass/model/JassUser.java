@@ -1,5 +1,6 @@
 package ch.bbzw.jass.model;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -9,15 +10,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 public class JassUser implements UserDetails {
 	private static final long serialVersionUID = 596295417387028782L;
@@ -28,19 +28,16 @@ public class JassUser implements UserDetails {
 	
 	private String name;
 	
-	public JassUser(String name ) {
+	private String password;
+	
+	public JassUser(String name, String password) {
 		this.name = name;
+		this.password = password;
 	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getPassword() {
-		return id.toString();
+		return Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"));
 	}
 
 	@Override

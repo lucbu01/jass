@@ -1,0 +1,33 @@
+<div class="center">
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>Spiel Lobby</mat-card-title>
+          <mat-card-subtitle>BBZW Jass</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+            <p>
+                <mat-dialog-content>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Einladungscode</mat-label>
+                        <input type="text" matInput readonly [value]="game ? game.id : ''" (click)="invitationLinkClicked($event)">
+                    </mat-form-field>
+                </mat-dialog-content>
+            </p>
+            <h3>Team 1</h3>
+            <ul *ngIf="game">
+                <li *ngFor="let player of game.teams[0].players">
+                    {{ player.name }}
+                </li>
+            </ul>
+            <h3>Team 2</h3>
+            <ul *ngIf="game">
+                <li *ngFor="let player of game.teams[1].players">
+                    {{ player.name }}
+                </li>
+            </ul>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-raised-button color="primary" [disabled]="!canStart()" (click)="start()">Spiel starten</button>
+        </mat-card-actions>
+      </mat-card>
+</div>
