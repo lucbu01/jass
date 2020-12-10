@@ -1,0 +1,13 @@
+<form [formGroup]="form" (ngSubmit)="join()">
+    <h2>Spiel beitreten</h2>
+    <mat-dialog-content>
+        <mat-form-field appearance="fill">
+            <mat-label>Einladungscode</mat-label>
+            <input type="text" matInput formControlName="gameId">
+        </mat-form-field>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+        <button mat-raised-button type="submit" color="primary" [disabled]="form.invalid">Beitreten</button>
+        <button mat-button type="button" color="warn" matDialogClose>Abbrechen</button>
+    </mat-dialog-actions>
+</form>

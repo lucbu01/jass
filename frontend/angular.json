@@ -128,5 +128,8 @@
       }
     }
   },
-  "defaultProject": "jass-client"
+  "defaultProject": "jass-client",
+  "cli": {
+    "analytics": false
+  }
 }

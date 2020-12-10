@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorViewResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -26,17 +27,6 @@ public class JassApplication {
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
-		return new PasswordEncoder() {
-
-			@Override
-			public boolean matches(CharSequence rawPassword, String encodedPassword) {
-				return rawPassword.toString().equals(encodedPassword);
-			}
-
-			@Override
-			public String encode(CharSequence rawPassword) {
-				return rawPassword.toString();
-			}
-		};
+		return new BCryptPasswordEncoder();
 	}
 }

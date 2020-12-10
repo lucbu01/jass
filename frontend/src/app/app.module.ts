@@ -10,15 +10,21 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {MatDialogModule} from '@angular/material/dialog';
 import { HttpClientModule } from '@angular/common/http';
 import { WebSocketService } from './services/web-socket.service';
 import { PlaygroundComponent } from './playground/playground.component';
+import { LobbyComponent } from './lobby/lobby.component';
+import { JoinDialogComponent } from './menu/join-dialog/join-dialog.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MenuComponent,
-    PlaygroundComponent
+    PlaygroundComponent,
+    LobbyComponent,
+    JoinDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -30,6 +36,8 @@ import { PlaygroundComponent } from './playground/playground.component';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    MatSnackBarModule,
+    MatDialogModule,
     HttpClientModule
   ],
   providers: [

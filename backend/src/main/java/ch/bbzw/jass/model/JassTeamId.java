@@ -4,16 +4,12 @@ import java.io.Serializable;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 public class JassTeamId implements Serializable {
 
 	private static final long serialVersionUID = -6815092191529313413L;
