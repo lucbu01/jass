@@ -11,15 +11,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class WebSocketService implements OnDestroy {
 
-  constructor(private router: Router, private snack: MatSnackBar) {
-    this.event<{ message: string, redirectTo?: string }>('/user/private/messages').subscribe(message => {
-      this.snack.open(message.message, undefined, { duration: 5000 });
-      if (message.redirectTo) {
-        this.router.navigateByUrl(message.redirectTo);
-      }
-    });
-  }
-
   private client = new RxStomp();
   private connectedUser?: string;
   private events: { [destination: string]: Observable<any> } = {};
@@ -55,6 +46,15 @@ export class WebSocketService implements OnDestroy {
     }
   })).pipe(share());
 
+  constructor(private router: Router, private snack: MatSnackBar) {
+    this.event<{ message: string; redirectTo?: string }>('/user/private/messages').subscribe(message => {
+      this.snack.open(message.message, undefined, { duration: 5000 });
+      if (message.redirectTo) {
+        this.router.navigateByUrl(message.redirectTo);
+      }
+    });
+  }
+
   get userId(): string | undefined  {
     const userId = localStorage.getItem('userId');
     return userId ? userId : undefined;
@@ -64,33 +64,11 @@ export class WebSocketService implements OnDestroy {
     return this.client.connected();
   }
 
-  private navigateToLoginPage(): void {
-    window.removeEventListener('online', this.onlineEventListener);
-    window.removeEventListener('focus', this.onlineEventListener);
-    if (!this.router.isActive('/', true)) {
-      this.router.navigate(['/']);
-    }
-  }
-
-  private onlineEventListener = () => {
-    this.tryConnect().subscribe(connected => {
-      if (!connected) {
-        this.navigateToLoginPage();
-      }
-    });
-  }
-
   tryConnect(userId?: string): Observable<boolean> {
     if (userId) {
       localStorage.setItem('userId', userId);
     }
     return this.currentConnectionTry;
-  }
-
-  private disconnect(): void {
-    if (this.client.connected()) {
-      this.client.deactivate();
-    }
   }
 
   logout(): void {
@@ -140,5 +118,27 @@ export class WebSocketService implements OnDestroy {
 
   ngOnDestroy(): void {
     this.disconnect();
+  }
+
+  private navigateToLoginPage(): void {
+    window.removeEventListener('online', this.onlineEventListener);
+    window.removeEventListener('focus', this.onlineEventListener);
+    if (!this.router.isActive('/', true)) {
+      this.router.navigate(['/']);
+    }
+  }
+
+  private onlineEventListener = () => {
+    this.tryConnect().subscribe(connected => {
+      if (!connected) {
+        this.navigateToLoginPage();
+      }
+    });
+  };
+
+  private disconnect(): void {
+    if (this.client.connected()) {
+      this.client.deactivate();
+    }
   }
 }
