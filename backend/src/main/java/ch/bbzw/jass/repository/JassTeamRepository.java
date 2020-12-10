@@ -8,5 +8,4 @@ import ch.bbzw.jass.model.JassTeamId;
 
 @Repository
 public interface JassTeamRepository extends JpaRepository<JassTeam, JassTeamId> {
-
 }

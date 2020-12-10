@@ -21,6 +21,8 @@ public class JassGame {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
+	
+	private Boolean started;
 
 	@OneToMany(mappedBy = "game")
 	private List<JassTeam> teams = new ArrayList<>();

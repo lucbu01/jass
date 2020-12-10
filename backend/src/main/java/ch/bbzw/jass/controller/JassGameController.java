@@ -30,6 +30,11 @@ public class JassGameController {
 	public GameDto joinGame(@DestinationVariable UUID id) {
 		return gameService.joinGame(id);
 	}
+	
+	@MessageMapping("/game/{id}/start")
+	public void startGame(@DestinationVariable UUID id) {
+		gameService.startGame(id);
+	}
 
 	@MessageExceptionHandler
 	@SendToUser("/private/messages")

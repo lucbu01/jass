@@ -68,9 +68,31 @@ public class JassGameService {
 			teamRepository.save(team);
 		}
 		GameDto dto = new GameDto(game);
-		webSocket.convertAndSend("/public/game/" + game.getId(), dto);
+		update(dto);
 		return dto;
 	}
+
+	public void startGame(UUID id) {
+		JassGame game = get(id);
+		if (game.getAllPlayers().size() == 4) {
+			game.setStarted(true);
+			gameRepository.save(game);
+			update(new GameDto(game));
+		} else {
+			throw new MessageException(new MessageDto("Spiel muss 4 Spieler enthalten", "/"));
+		}
+	}
 	
+	public JassGame get(UUID id) {
+		JassGame game = gameRepository.findById(id).orElseThrow(() -> new MessageException(new MessageDto("Spiel wurde nicht gefunden", "/")));
+		if (game.getAllPlayers().contains(userService.getUser())) {
+			return game;
+		} else {
+			throw new MessageException(new MessageDto("Spiel wurde nicht gefunden", "/"));
+		}
+	}
 	
+	public void update(GameDto game) {
+		webSocket.convertAndSend("/public/game/" + game.getId(), game);
+	}
 }

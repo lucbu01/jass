@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { WebSocketService } from '../services/web-socket.service';
 
@@ -14,7 +14,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   gameSubscription?: Subscription;
 
-  constructor(private route: ActivatedRoute, private webSocketService: WebSocketService) { }
+  constructor(private router: Router, private route: ActivatedRoute, private webSocketService: WebSocketService) { }
 
   ngOnInit(): void {
     this.subscriptions.push(
@@ -23,7 +23,13 @@ export class LobbyComponent implements OnInit, OnDestroy {
           this.gameSubscription.unsubscribe();
         }
         if (data.id) {
-          this.gameSubscription = this.webSocketService.data(`/public/game/${data.id}`).subscribe(game => this.game = game);
+          this.gameSubscription = this.webSocketService.data(`/public/game/${data.id}`).subscribe(game => {
+            this.game = game;
+            if (this.game.started) {
+              this.router.navigate(['/play', this.game.id]);
+              console.log(`Game ${this.game.id} started!`);
+            }
+          });
         }
       })
     );
@@ -38,7 +44,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
 
   start(): void {
     if (this.canStart()) {
-      // do
+      this.webSocketService.send(`/public/game/${this.game.id}/start`);
     }
   }
 
