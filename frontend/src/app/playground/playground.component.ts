@@ -13,11 +13,18 @@ export class PlaygroundComponent implements OnInit {
   playerName4 = 'player4';
   scoreTeam1 = '0';
   scoreTeam2 = '0';
+  playedCard = '';
+  playedCardMate = '';
+  playedCardOpponent1 = '';
+  playedCardOpponent2 = '';
   cards: Card[] = [];
 
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  cardClicked(card: Card): void {
   }
 
 }
