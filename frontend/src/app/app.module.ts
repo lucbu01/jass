@@ -14,6 +14,7 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatDialogModule} from '@angular/material/dialog';
 import { HttpClientModule } from '@angular/common/http';
 import { WebSocketService } from './services/web-socket.service';
+import { PlaygroundComponent } from './playground/playground.component';
 import { LobbyComponent } from './lobby/lobby.component';
 import { JoinDialogComponent } from './menu/join-dialog/join-dialog.component';
 
@@ -21,6 +22,7 @@ import { JoinDialogComponent } from './menu/join-dialog/join-dialog.component';
   declarations: [
     AppComponent,
     MenuComponent,
+    PlaygroundComponent,
     LobbyComponent,
     JoinDialogComponent
   ],
