@@ -2,11 +2,17 @@ package ch.bbzw.jass.service;
 
 import java.util.UUID;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import ch.bbzw.jass.exception.MessageException;
 import ch.bbzw.jass.model.JassGame;
 import ch.bbzw.jass.model.JassTeam;
+import ch.bbzw.jass.model.dto.GameDto;
+import ch.bbzw.jass.model.dto.MessageDto;
 import ch.bbzw.jass.repository.JassGameRepository;
 import ch.bbzw.jass.repository.JassMatchRepository;
 import ch.bbzw.jass.repository.JassMoveRepository;
@@ -14,8 +20,10 @@ import ch.bbzw.jass.repository.JassRoundRepository;
 import ch.bbzw.jass.repository.JassTeamRepository;
 
 @Service
+@Transactional
 public class JassGameService {
 
+	private SimpMessagingTemplate webSocket;
 	private JassGameRepository gameRepository;
 	private JassTeamRepository teamRepository;
 	private JassMatchRepository matchRepository;
@@ -24,9 +32,10 @@ public class JassGameService {
 	private JassUserService userService;
 	
 	@Autowired
-	public JassGameService(JassGameRepository gameRepository, JassTeamRepository teamRepository,
+	public JassGameService(SimpMessagingTemplate webSocket, JassGameRepository gameRepository, JassTeamRepository teamRepository,
 			JassMatchRepository matchRepository, JassRoundRepository roundRepository, JassMoveRepository moveRepository,
 			JassUserService userService) {
+		this.webSocket = webSocket;
 		this.gameRepository = gameRepository;
 		this.teamRepository = teamRepository;
 		this.matchRepository = matchRepository;
@@ -43,6 +52,24 @@ public class JassGameService {
 		teamRepository.save(team1);
 		teamRepository.save(team2);
 		return game.getId();
+	}
+
+	public GameDto joinGame(UUID gameId) {
+		JassGame game = gameRepository.findById(gameId).orElseThrow(() -> new MessageException(new MessageDto("Spiel wurde nicht gefunden", "/")));
+		JassTeam team = game.getTeams().get(0);
+		if (!game.getTeams().stream().anyMatch(t -> t.getUsers().stream().anyMatch(u -> u.getId().equals(userService.getUser().getId())))) {			
+			if (team.getUsers().size() > 1) {
+				team = game.getTeams().get(1);
+			}
+			if (team.getUsers().size() > 1) {			
+				throw new MessageException(new MessageDto("Das Spiel ist bereits voll", "/"));
+			}
+			team.getUsers().add(userService.getUser());
+			teamRepository.save(team);
+		}
+		GameDto dto = new GameDto(game);
+		webSocket.convertAndSend("/public/game/" + game.getId(), dto);
+		return dto;
 	}
 	
 	

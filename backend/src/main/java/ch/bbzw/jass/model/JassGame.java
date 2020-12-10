@@ -23,8 +23,14 @@ public class JassGame {
 	private UUID id;
 
 	@OneToMany(mappedBy = "game")
-	private List<JassTeam> team = new ArrayList<>();
+	private List<JassTeam> teams = new ArrayList<>();
 
 	@OneToMany(mappedBy = "game")
 	private List<JassMatch> matches = new ArrayList<>();
+	
+	public List<JassUser> getAllPlayers() {
+		List<JassUser> players = new ArrayList<>();
+		teams.stream().forEach(team -> players.addAll(team.getUsers()));
+		return players;
+	}
 }

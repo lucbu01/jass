@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { WebSocketService } from '../services/web-socket.service';
 import { Subscription } from 'rxjs';
@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.scss']
 })
-export class MenuComponent implements OnInit {
+export class MenuComponent implements OnInit, OnDestroy {
   name = '';
   subscriptions: Subscription[] = [];
 
@@ -21,6 +21,10 @@ export class MenuComponent implements OnInit {
       this.webSocketService.event<string>('/user/private/name').subscribe(name => this.name = name),
       this.webSocketService.event<string>('/user/private/game/created').subscribe(game => this.router.navigate(['/lobby', game]))
     );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(s => s.unsubscribe());
   }
 
   create(): void {

@@ -14,6 +14,7 @@ import org.easymock.Mock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import ch.bbzw.jass.model.JassGame;
 import ch.bbzw.jass.model.JassTeam;
@@ -27,6 +28,8 @@ import ch.bbzw.jass.repository.JassTeamRepository;
 @ExtendWith(EasyMockExtension.class)
 public class JassGameServiceTest {
 
+	@Mock
+	SimpMessagingTemplate webSocket;
 	@Mock
 	JassGameRepository gameRepository;
 	@Mock
@@ -44,7 +47,7 @@ public class JassGameServiceTest {
 	
 	@BeforeEach
 	public void setUp() {
-		testee = new JassGameService(gameRepository, teamRepository, matchRepository, roundRepository, moveRepository, userService);
+		testee = new JassGameService(webSocket, gameRepository, teamRepository, matchRepository, roundRepository, moveRepository, userService);
 	}
 	 
 	@Test
