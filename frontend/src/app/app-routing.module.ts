@@ -5,7 +5,7 @@ import { PlaygroundComponent } from './playground/playground.component';
 
 const routes: Routes = [
   { path: '', component: MenuComponent },
-  { path: 'play', component: PlaygroundComponent }
+  { path: 'play/:id', component: PlaygroundComponent }
 ];
 
 @NgModule({
