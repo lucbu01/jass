@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { WebSocketService } from '../services/web-socket.service';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { JoinDialogComponent } from './join-dialog/join-dialog.component';
 
 @Component({
   selector: 'app-menu',
@@ -13,7 +15,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   name = '';
   subscriptions: Subscription[] = [];
 
-  constructor(private http: HttpClient, private webSocketService: WebSocketService, private router: Router) { }
+  constructor(private http: HttpClient, private webSocketService: WebSocketService, private router: Router, private dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.subscriptions.push(
@@ -32,7 +34,11 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   join(): void {
-    this.setUsername(() => {});
+    this.setUsername(() => this.dialog.open(JoinDialogComponent).afterClosed().subscribe(data => {
+      if (data) {
+        this.router.navigate(['/lobby', data]);
+      }
+    }));
   }
 
   setUsername(callback: () => void): void {

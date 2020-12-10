@@ -5,6 +5,14 @@
           <mat-card-subtitle>BBZW Jass</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
+            <p>
+                <mat-dialog-content>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Einladungscode</mat-label>
+                        <input type="text" matInput readonly [value]="game ? game.id : ''" (click)="invitationLinkClicked($event)">
+                    </mat-form-field>
+                </mat-dialog-content>
+            </p>
             <h3>Team 1</h3>
             <ul *ngIf="game">
                 <li *ngFor="let player of game.teams[0].players">

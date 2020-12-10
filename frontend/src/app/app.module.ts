@@ -11,15 +11,18 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {MatDialogModule} from '@angular/material/dialog';
 import { HttpClientModule } from '@angular/common/http';
 import { WebSocketService } from './services/web-socket.service';
 import { LobbyComponent } from './lobby/lobby.component';
+import { JoinDialogComponent } from './menu/join-dialog/join-dialog.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MenuComponent,
-    LobbyComponent
+    LobbyComponent,
+    JoinDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -32,6 +35,7 @@ import { LobbyComponent } from './lobby/lobby.component';
     MatInputModule,
     MatButtonModule,
     MatSnackBarModule,
+    MatDialogModule,
     HttpClientModule
   ],
   providers: [

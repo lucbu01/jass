@@ -46,4 +46,8 @@ export class LobbyComponent implements OnInit, OnDestroy {
     return this.game && this.game.teams[0].players.length === 2 && this.game.teams[1].players.length === 2;
   }
 
+  invitationLinkClicked(event: Event): void {
+    (event.target as HTMLInputElement).select();
+  }
+
 }

@@ -68,7 +68,7 @@ export class WebSocketService implements OnDestroy {
     window.removeEventListener('online', this.onlineEventListener);
     window.removeEventListener('focus', this.onlineEventListener);
     if (!this.router.isActive('/', true)) {
-      this.router.navigate(['/'], { queryParams: { redirectTo: this.router.url }});
+      this.router.navigate(['/']);
     }
   }
 
