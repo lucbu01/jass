@@ -7,10 +7,13 @@ Eine Webseite, auf der 4 Spieler online miteinander ein Jass Spiel (Schieber) sp
 ## Technologien
  - Spring Boot Backend (evtl. mit Websocket)
  - Angular Frontend
- - evtl. Datenbank (Postgres)
+ - In-Memory-Datenbank (H2)
  
 ## App auf Heroku
 https://bbzw-jass.herokuapp.com/
 
 ## Pull Request Vorschau auf Heroku
 https://bbzw-jass-dev.herokuapp.com/
+
+## IDE Aufsetzen
+[Im Wiki anzeigen](https://github.com/lucbu01/jass/wiki/IDEs-aufsetzen)
