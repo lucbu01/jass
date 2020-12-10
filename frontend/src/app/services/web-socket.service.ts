@@ -94,7 +94,7 @@ export class WebSocketService implements OnDestroy {
   }
 
   logout(): void {
-    this.router.navigateByUrl('/login');
+    this.router.navigateByUrl('/');
     this.disconnect();
     localStorage.clear();
     window.removeEventListener('online', this.onlineEventListener);
