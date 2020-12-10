@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { EMPTY, Observable, of, ReplaySubject } from 'rxjs';
-import { first, map, multicast, refCount, share, switchMap } from 'rxjs/operators';
+import { EMPTY, Observable, of } from 'rxjs';
+import { first, map, share, switchMap } from 'rxjs/operators';
 import { RxStomp } from '@stomp/rx-stomp';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
@@ -13,8 +13,6 @@ export class WebSocketService implements OnDestroy {
 
   private client = new RxStomp();
   private connectedUser?: string;
-  private events: { [destination: string]: Observable<any> } = {};
-  private datas: { [destination: string]: Observable<any> } = {};
   private currentConnectionTry = of(true).pipe(switchMap(() => {
     const userId = this.userId;
     if (this.client.connected() && this.connectedUser === userId) {
@@ -96,24 +94,18 @@ export class WebSocketService implements OnDestroy {
   }
 
   event<T>(destination: string): Observable<T> {
-    if (!this.events[destination]) {
-      this.events[destination] =  this.client.watch(destination).pipe(map(value => JSON.parse(value.body))).pipe(share());
-    }
-    return this.events[destination];
+    return this.client.watch(destination).pipe(map(value => JSON.parse(value.body))).pipe(share());
   }
 
   data<T>(destination: string): Observable<T> {
-    if (!this.datas[destination]) {
-      this.datas[destination] = this.tryConnect().pipe(switchMap(connected => {
-        if (connected) {
-          return this.client.watch(destination).pipe(map(value => JSON.parse(value.body)));
-        } else {
-          this.navigateToLoginPage();
-          return EMPTY;
-        }
-      })).pipe(multicast(new ReplaySubject()), refCount());
-    }
-    return this.datas[destination];
+    return this.tryConnect().pipe(switchMap(connected => {
+      if (connected) {
+        return this.client.watch(destination).pipe(map(value => JSON.parse(value.body)));
+      } else {
+        this.navigateToLoginPage();
+        return EMPTY;
+      }
+    }));
   }
 
   ngOnDestroy(): void {
