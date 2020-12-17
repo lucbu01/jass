@@ -23,7 +23,10 @@ export class PlaygroundComponent implements OnInit {
   cards: Card[] = [];
   subscriptions: Subscription[] = [];
   gameSubscription?: Subscription;
-  game: any;
+  handSubscription?: Subscription;
+  hand: any = [];
+  game: any = {};
+  isAnnouncer = true;
 
   constructor(private router: Router, private route: ActivatedRoute,private webSocketService: WebSocketService) { }
 
@@ -34,16 +37,47 @@ export class PlaygroundComponent implements OnInit {
           this.gameSubscription.unsubscribe();
         }
         if (data.id) {
-          this.gameSubscription = this.webSocketService.data(`/public/game/${data.id}`).subscribe(game => {
-            this.game = game;
+          if (this.handSubscription) {
+            this.handSubscription.unsubscribe();
+            this.handSubscription = undefined;
+          }
+          if (this.gameSubscription) {
+            this.gameSubscription.unsubscribe();
+          }
+          this.gameSubscription = this.webSocketService.data<any>(`/public/game/${data.id}`).subscribe(game => {
+            if (!this.handSubscription) {
+              this.handSubscription = this.webSocketService.data<any>(`/user/private/game/${game.id}/hand`).subscribe(hand => {
+                this.hand = hand;
+              });
+            }
+            this.game = this.assignDeep(this.game, game);
             this.playerName1 = this.game.teams[0].players[0].name;
             this.playerName2 = this.game.teams[0].players[1].name;
             this.playerName3 = this.game.teams[1].players[0].name;
             this.playerName4 = this.game.teams[1].players[1].name;
+            if (game.match) {
+              if (this.webSocketService.userId?.includes(this.game.match.definitiveAnnouncer.id)) {
+                this.isAnnouncer = true;
+                console.log(this.isAnnouncer);
+              };
+            }
           });
         }
       })
     );
+  }
+
+  assignDeep(target: any, source: any) {
+    Object.keys(source).forEach(key => {
+      const targetValue = target[key];
+      const sourceValue = source[key];
+      if (targetValue && typeof(targetValue) === 'object' && typeof(sourceValue) === 'object' && !Array.isArray(targetValue)) {
+        target[key] = this.assignDeep(targetValue, sourceValue);
+      } else {
+        target[key] = sourceValue;
+      }
+    });
+    return target;
   }
 
   cardClicked(card: Card): void {

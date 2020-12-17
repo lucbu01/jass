@@ -1,6 +1,8 @@
 package ch.bbzw.jass.model;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -27,7 +29,7 @@ public class JassMatch {
 	private Integer index;
 
 	@OneToMany
-	private List<JassRound> round;
+	private List<JassRound> rounds = new ArrayList<>();
 
 	@Enumerated(EnumType.STRING)
 	private JassMatchType type;
@@ -35,10 +37,31 @@ public class JassMatch {
 	@ManyToOne
 	private JassUser announcer;
 
-	public JassMatch(JassGame game, Integer index, JassMatchType type, JassUser announcer) {
+	@OneToMany
+	private List<JassHand> handItems = new ArrayList<>();
+
+	private boolean pushed = false;
+
+	public JassMatch(JassGame game, Integer index) {
 		this.game = game;
 		this.index = index;
-		this.type = type;
-		this.announcer = announcer;
+	}
+
+	public List<JassHand> getHandItems(JassUser player) {
+		return getHandItems().stream().filter(item -> item.getUser().getId().equals(player.getId()))
+				.collect(Collectors.toList());
+	}
+
+	public List<JassCard> getHand(JassUser player) {
+		return JassCards.sort(getHandItems(player).stream().map(item -> item.getCard()).collect(Collectors.toList()));
+	}
+
+	public JassUser getDefinitiveAnnouncer() {
+		if (isPushed()) {
+			JassTeam team = getGame().getTeams().stream().filter(t -> t.getUsers().contains(getAnnouncer())).findFirst()
+					.get();
+			return team.getUsers().stream().filter(p -> !p.equals(getAnnouncer())).findFirst().get();
+		}
+		return getAnnouncer();
 	}
 }

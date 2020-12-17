@@ -21,7 +21,7 @@ public class JassGame {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
-	
+
 	private Boolean started;
 
 	@OneToMany(mappedBy = "game")
@@ -29,10 +29,17 @@ public class JassGame {
 
 	@OneToMany(mappedBy = "game")
 	private List<JassMatch> matches = new ArrayList<>();
-	
+
 	public List<JassUser> getAllPlayers() {
 		List<JassUser> players = new ArrayList<>();
 		teams.stream().forEach(team -> players.addAll(team.getUsers()));
 		return players;
+	}
+
+	public List<JassCard> getActualHand(JassUser player) {
+		if (getMatches().size() > 0) {
+			return getMatches().get(getMatches().size() - 1).getHand(player);
+		}
+		return new ArrayList<>();
 	}
 }
