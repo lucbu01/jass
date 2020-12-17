@@ -22,9 +22,18 @@ public class GameDto {
 	private MatchDto match;
 
 	public GameDto(JassGame game) {
+		this(game, false);
+	}
+
+	public GameDto(JassGame game, boolean withMatch) {
 		this.id = game.getId();
 		this.teams = game.getTeams().stream().map(TeamDto::new).collect(Collectors.toList());
 		this.started = game.getStarted();
+		if (game.getMatches().size() > 0) {
+			JassMatch match = game.getMatches().get(game.getMatches().size() - 1);
+			this.match = new MatchDto(match.getIndex(), new PlayerDto(match.getAnnouncer()),
+					new PlayerDto(match.getDefinitiveAnnouncer()), match.isPushed());
+		}
 	}
 
 	public GameDto(JassMatch match) {

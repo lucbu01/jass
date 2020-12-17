@@ -46,8 +46,10 @@ export class PlaygroundComponent implements OnInit {
           }
           this.gameSubscription = this.webSocketService.data<any>(`/public/game/${data.id}`).subscribe(game => {
             if (!this.handSubscription) {
-              this.handSubscription = this.webSocketService.data<any>(`/user/private/game/${game.id}/hand`).subscribe(hand => {
-                this.hand = hand;
+              setTimeout(() => {
+                this.handSubscription = this.webSocketService.data<any>(`/user/private/game/${game.id}/hand`).subscribe(hand => {
+                  this.hand = hand;
+                });
               });
             }
             this.game = this.assignDeep(this.game, game);

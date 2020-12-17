@@ -84,10 +84,9 @@ public class JassGameService {
 			}
 			team.getUsers().add(userService.getUser());
 			teamRepository.save(team);
+			update(new GameDto(game));
 		}
-		GameDto dto = new GameDto(game);
-		update(dto);
-		return dto;
+		return new GameDto(game, true);
 	}
 
 	public void startGame(UUID id) {
@@ -134,8 +133,6 @@ public class JassGameService {
 					match.setAnnouncer(player);
 				}
 			}
-			webSocket.convertAndSendToUser(player.getId().toString(), "/private/game/" + game.getId() + "/hand",
-					JassCards.sort(hand));
 		}
 		matchRepository.saveAndFlush(match);
 		if (match.getIndex() > 0) {
@@ -148,6 +145,10 @@ public class JassGameService {
 			match.setAnnouncer(allPlayers.get(newIndex));
 		}
 		update(new GameDto(match));
+		for (JassUser player : allPlayers) {
+			webSocket.convertAndSendToUser(player.getId().toString(), "/private/game/" + game.getId() + "/hand",
+					match.getHand(player));
+		}
 	}
 
 	public void update(GameDto game) {
