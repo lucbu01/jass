@@ -20,6 +20,7 @@ import ch.bbzw.jass.model.JassGame;
 import ch.bbzw.jass.model.JassTeam;
 import ch.bbzw.jass.model.JassUser;
 import ch.bbzw.jass.repository.JassGameRepository;
+import ch.bbzw.jass.repository.JassHandRepository;
 import ch.bbzw.jass.repository.JassMatchRepository;
 import ch.bbzw.jass.repository.JassMoveRepository;
 import ch.bbzw.jass.repository.JassRoundRepository;
@@ -41,13 +42,15 @@ public class JassGameServiceTest {
 	@Mock
 	JassMoveRepository moveRepository;
 	@Mock
+	JassHandRepository handRepository;
+	@Mock
 	JassUserService userService;
 	
 	JassGameService testee;
 	
 	@BeforeEach
 	public void setUp() {
-		testee = new JassGameService(webSocket, gameRepository, teamRepository, matchRepository, roundRepository, moveRepository, userService);
+		testee = new JassGameService(webSocket, gameRepository, teamRepository, matchRepository, roundRepository, moveRepository, handRepository, userService);
 	}
 	 
 	@Test

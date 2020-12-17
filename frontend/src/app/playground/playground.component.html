@@ -35,7 +35,7 @@
     </div>
     <div></div> <!-- empty grid space -->
     <div class="cards">
-        <img *ngFor="let card of cards" onclick="cardClicked(card)" src="../../assets/cards/{{card.color}}_{{card.value}}.png" onerror="this.style.display='none'">
+        <img *ngFor="let card of hand" onclick="cardClicked(card)" src="../../assets/cards/{{card.color}}_{{card.value}}.png" onerror="this.style.display='none'">
     </div>    
 </div>
 
