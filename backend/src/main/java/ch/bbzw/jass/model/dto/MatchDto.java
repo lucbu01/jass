@@ -3,6 +3,7 @@ package ch.bbzw.jass.model.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import ch.bbzw.jass.model.JassMatchType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -14,4 +15,5 @@ public class MatchDto {
 	private PlayerDto announcer;
 	private PlayerDto definitiveAnnouncer;
 	private Boolean pushed;
+	private JassMatchType type;
 }

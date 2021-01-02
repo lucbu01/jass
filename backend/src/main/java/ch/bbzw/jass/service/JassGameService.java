@@ -19,6 +19,9 @@ import ch.bbzw.jass.model.JassColor;
 import ch.bbzw.jass.model.JassGame;
 import ch.bbzw.jass.model.JassHand;
 import ch.bbzw.jass.model.JassMatch;
+import ch.bbzw.jass.model.JassMatchType;
+import ch.bbzw.jass.model.JassMove;
+import ch.bbzw.jass.model.JassRound;
 import ch.bbzw.jass.model.JassTeam;
 import ch.bbzw.jass.model.JassUser;
 import ch.bbzw.jass.model.JassValue;
@@ -116,8 +119,8 @@ public class JassGameService {
 		return game.getActualHand(userService.getUser());
 	}
 
-	public void mix(JassGame game) {
-		List<JassUser> allPlayers = game.getAllPlayers();
+	private void mix(JassGame game) {
+		List<JassUser> allPlayers = game.getAllPlayersSorted();
 		List<JassCard> cards = JassCards.getJassCards();
 		JassMatch match = matchRepository.save(new JassMatch(game, game.getMatches().size()));
 		SecureRandom random = new SecureRandom(Long.toString(ZonedDateTime.now().toEpochSecond()).getBytes());
@@ -137,12 +140,10 @@ public class JassGameService {
 		matchRepository.saveAndFlush(match);
 		if (match.getIndex() > 0) {
 			JassUser lastAnnouncer = game.getMatches().get(match.getIndex() - 1).getAnnouncer();
-			int lastIndex = allPlayers.indexOf(lastAnnouncer);
-			int newIndex = 0;
-			if (lastIndex < 3) {
-				newIndex = lastIndex + 1;
-			}
-			match.setAnnouncer(allPlayers.get(newIndex));
+			int indexOfLastAnnouncer = allPlayers.indexOf(lastAnnouncer);
+			int indexOfNewAnnouncer = indexOfLastAnnouncer == 3 ? 0 : indexOfLastAnnouncer + 1;
+			JassUser newAnnouncer = allPlayers.get(indexOfNewAnnouncer);
+			match.setAnnouncer(newAnnouncer);
 		}
 		update(new GameDto(match));
 		for (JassUser player : allPlayers) {
@@ -151,7 +152,99 @@ public class JassGameService {
 		}
 	}
 
+	public void play(UUID gameId, JassCard card) {
+		JassGame game = get(gameId);
+		JassMatch match = game.getMatches().get(game.getMatches().size() - 1);
+		JassUser user = userService.getUser();
+		JassRound round;
+		if (match.getRounds().size() == 0
+				|| match.getRounds().get(match.getRounds().size() - 1).getMoves().size() == 4) {
+			round = roundRepository.save(new JassRound(match, (short) match.getRounds().size()));
+			match.getRounds().add(round);
+		} else {
+			round = match.getRounds().get(match.getRounds().size() - 1);
+		}
+		if (round.isTheTurn(user)) {
+			JassHand handItem = match.getHandItems(user).stream().filter(itm -> itm.getCard().equals(card)).findFirst()
+					.orElseThrow(() -> new MessageException(new MessageDto("Die Karte ist nicht in deinem Besitz")));
+			if (round.canPlay(card)) {
+				handRepository.delete(handItem);
+				match.getHandItems().remove(handItem);
+				JassMove move = moveRepository.save(new JassMove(round, (byte) round.getMoves().size(), user, card));
+				round.getMoves().add(move);
+				update(new GameDto(round));
+				if (round.getMoves().size() == 4) {
+					message(game, new MessageDto("Die Runde ist beendet, der Gewinner darf anfangen ..."));
+					try {
+						Thread.sleep(2000);
+					} catch (Exception e) {
+					}
+					int teamOnePoints = game.calculatePointsOfTeamOne();
+					int teamTwoPoints = game.calculatePointsOfTeamTwo();
+					JassUser winner = round.calculateWinner();
+					round = roundRepository.save(new JassRound(match, (short) match.getRounds().size()));
+					match.getRounds().add(round);
+					update(new GameDto(round, teamOnePoints, teamTwoPoints));
+					message(winner, new MessageDto("Du darfst anfangen"));
+				} else {
+					JassUser nextTurn = round.getTurnOf();
+					message(nextTurn, new MessageDto("Du bist an der Reihe"));
+				}
+			} else {
+				throw new MessageException(
+						new MessageDto("Du kannst diese Karte nicht spielen. Bitte halte dich an die Jass-Regeln!"));
+			}
+		} else {
+			throw new MessageException(new MessageDto("Du bist nicht an der Reihe"));
+		}
+	}
+
+	public void announce(UUID gameId, JassMatchType gamemode) {
+		JassGame game = get(gameId);
+		JassMatch match = game.getMatches().get(game.getMatches().size() - 1);
+		JassUser user = userService.getUser();
+		if (match.getType() == null) {
+			if (user.getId().equals(match.getDefinitiveAnnouncer().getId())) {
+				match.setType(gamemode);
+				matchRepository.save(match);
+				update(new GameDto(match));
+			} else {
+				throw new MessageException(new MessageDto("Du darfst nicht ansagen"));
+			}
+		} else {
+			throw new MessageException(new MessageDto("Der Typ wurde schon gesetzt"));
+		}
+	}
+
+	public void push(UUID gameId) {
+		JassGame game = get(gameId);
+		JassMatch match = game.getMatches().get(game.getMatches().size() - 1);
+		JassUser user = userService.getUser();
+		if (user.getId().equals(match.getDefinitiveAnnouncer().getId())) {
+			if (match.isPushed()) {
+				throw new MessageException(new MessageDto("Es wurde schon geschoben"));
+			} else {
+				match.setPushed(true);
+				matchRepository.save(match);
+				update(new GameDto(match));
+			}
+		} else {
+			throw new MessageException(new MessageDto("Du darfst nicht ansagen"));
+		}
+	}
+
 	public void update(GameDto game) {
 		webSocket.convertAndSend("/public/game/" + game.getId(), game);
 	}
+
+	private void message(JassGame game, MessageDto message) {
+		for (JassUser player : game.getAllPlayers()) {
+			message(player, message);
+		}
+	}
+
+	private void message(JassUser user, MessageDto message) {
+		webSocket.convertAndSendToUser(user.getId().toString(), "/private/messages", message);
+	}
+
 }

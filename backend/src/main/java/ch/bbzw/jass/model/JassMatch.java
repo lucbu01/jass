@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,7 @@ public class JassMatch {
 	private Integer index;
 
 	@OneToMany
+	@OrderBy("index")
 	private List<JassRound> rounds = new ArrayList<>();
 
 	@Enumerated(EnumType.STRING)
@@ -63,5 +65,9 @@ public class JassMatch {
 			return team.getUsers().stream().filter(p -> !p.equals(getAnnouncer())).findFirst().get();
 		}
 		return getAnnouncer();
+	}
+
+	public int calculatePointsOfTeam(JassTeam team) {
+		return type.calculatePointsOfTeam(team, rounds);
 	}
 }

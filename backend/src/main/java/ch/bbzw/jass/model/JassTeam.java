@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OrderBy;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,6 +27,7 @@ public class JassTeam {
 	private Byte index;
 
 	@ManyToMany
+	@OrderBy("id")
 	private List<JassUser> users = new ArrayList<JassUser>();
 
 	public JassTeam(JassGame game, Byte index) {

@@ -21,12 +21,12 @@ import ch.bbzw.jass.repository.JassUserRepository;
 @Service
 @Transactional
 public class JassUserService implements UserDetailsService {
-	
+
 	private static Logger log = LoggerFactory.getLogger(JassUserService.class);
-	
+
 	@Autowired
 	JassUserRepository userRepository;
-	
+
 	@Autowired
 	PasswordEncoder passwordEncoder;
 
@@ -51,11 +51,11 @@ public class JassUserService implements UserDetailsService {
 		user.setName(name);
 		userRepository.save(user);
 	}
-	
+
 	public String getName() {
 		return getUser().getName();
 	}
-	
+
 	public Optional<JassUser> getLoggedInUser() {
 		try {
 			JassUser user = (JassUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -64,9 +64,9 @@ public class JassUserService implements UserDetailsService {
 			return Optional.empty();
 		}
 	}
-	
+
 	public JassUser getUser() {
 		return getLoggedInUser().get();
 	}
-	
+
 }

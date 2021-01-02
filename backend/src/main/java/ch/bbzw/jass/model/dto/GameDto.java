@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import ch.bbzw.jass.model.JassGame;
 import ch.bbzw.jass.model.JassMatch;
+import ch.bbzw.jass.model.JassRound;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -20,6 +21,8 @@ public class GameDto {
 	private List<TeamDto> teams;
 	private Boolean started;
 	private MatchDto match;
+	private RoundDto round;
+	private ScoreboardDto scoreboard;
 
 	public GameDto(JassGame game) {
 		this(game, false);
@@ -32,12 +35,21 @@ public class GameDto {
 		if (game.getMatches().size() > 0) {
 			JassMatch match = game.getMatches().get(game.getMatches().size() - 1);
 			this.match = new MatchDto(match.getIndex(), new PlayerDto(match.getAnnouncer()),
-					new PlayerDto(match.getDefinitiveAnnouncer()), match.isPushed());
+					new PlayerDto(match.getDefinitiveAnnouncer()), match.isPushed(), match.getType());
 		}
 	}
 
 	public GameDto(JassMatch match) {
 		this.match = new MatchDto(match.getIndex(), new PlayerDto(match.getAnnouncer()),
-				new PlayerDto(match.getDefinitiveAnnouncer()), match.isPushed());
+				new PlayerDto(match.getDefinitiveAnnouncer()), match.isPushed(), match.getType());
+	}
+
+	public GameDto(JassRound round) {
+		this.round = new RoundDto(round);
+	}
+
+	public GameDto(JassRound round, int teamOnePoints, int teamTwoPoints) {
+		this.scoreboard = new ScoreboardDto(teamOnePoints, teamTwoPoints);
+		this.round = new RoundDto(round);
 	}
 }
