@@ -26,7 +26,7 @@ export class PlaygroundComponent implements OnInit {
   handSubscription?: Subscription;
   hand: any = [];
   game: any = {};
-  isAnnouncer = true;
+  hasToAnnounce = false;
 
   constructor(private router: Router, private route: ActivatedRoute,private webSocketService: WebSocketService) { }
 
@@ -58,9 +58,8 @@ export class PlaygroundComponent implements OnInit {
             this.playerName3 = this.game.teams[1].players[0].name;
             this.playerName4 = this.game.teams[1].players[1].name;
             if (game.match) {
-              if (this.webSocketService.userId?.includes(this.game.match.definitiveAnnouncer.id)) {
-                this.isAnnouncer = true;
-                console.log(this.isAnnouncer);
+              if (!game.match.type && this.webSocketService.userId?.includes(game.match.definitiveAnnouncer.id)) {
+                this.hasToAnnounce = true;
               };
             }
           });
@@ -82,7 +81,18 @@ export class PlaygroundComponent implements OnInit {
     return target;
   }
 
-  cardClicked(card: Card): void {
+  cardClick(card: Card): void {
+    this.webSocketService.send(`/public/game/${this.game.id}/play`, card);
+  }
+
+  push(): void {
+    this.webSocketService.send(`/public/game/${this.game.id}/push`);
+    this.hasToAnnounce = false;
+  }
+
+  announce(type: string): void {
+    this.webSocketService.send(`/public/game/${this.game.id}/announce`, type);
+    this.hasToAnnounce = false;
   }
 
 }

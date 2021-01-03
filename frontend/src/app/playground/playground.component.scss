@@ -3,14 +3,14 @@
     width: 100%;
     display: grid;
     grid-template-columns: auto 163px 163px 163px 163px 163px 163px 163px 163px 163px auto 300px;
-    grid-template-rows: auto auto 249px;
+    grid-template-rows: auto auto auto 249px;
     grid-gap: 10px;
     background-color: #f8f8f8;
 }
 
 .playground {
     grid-column: 1 / span 11;
-    grid-row: 1 / span 2;
+    grid-row: 1 / span 3;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -72,3 +72,13 @@
     }
 }
 
+.announce-overlay {
+    z-index: 20;
+    position: absolute;
+    top: 200px;
+    left: 400px;
+    
+    img {
+        margin: 0 5px;
+    }
+}

@@ -227,6 +227,7 @@ public class JassGameService {
 				match.setPushed(true);
 				matchRepository.save(match);
 				update(new GameDto(match));
+				message(game, new MessageDto(user.getName() + " hat geschoben"));
 			}
 		} else {
 			throw new MessageException(new MessageDto("Du darfst nicht ansagen"));

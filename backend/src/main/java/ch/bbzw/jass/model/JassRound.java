@@ -45,6 +45,9 @@ public class JassRound {
 		if (index == 0) {
 			JassUser beginner = match.getAnnouncer();
 			JassMatchType type = match.getType();
+			if (type == null) {
+				return null;
+			}
 			if (type.isDefinitiveAnnouncerCanBegin()) {
 				beginner = match.getDefinitiveAnnouncer();
 			}
