@@ -49,7 +49,7 @@ public enum JassMatchType {
 
 		winner = calculateWinner(moves, startColor, roundIndex);
 
-		if (team.getUsers().contains(winner.getUser())) {
+		if (winner != null && team.getUsers().contains(winner.getUser())) {
 			int points = calculatePoints(moves);
 			if (roundIndex == 8) {
 				points += 5;
@@ -99,30 +99,20 @@ public enum JassMatchType {
 	}
 
 	private JassMove getHighestOfColor(JassColor color, List<JassMove> moves, short roundIndex) {
-		JassDirection actualDirection = null;
+		JassDirection actualDirection = JassDirection.UPSIDE_DOWN;
 		if (direction != null) {
 			actualDirection = direction.getActualDirection(roundIndex);
 		}
 		if (color == trumpColor) {
 			return moves.stream().filter(move -> move.getColor() == color).sorted((x, y) -> {
-				if (x.getValue() == JassValue.UNDER) {
-					return 20;
-				} else if (x.getValue() == JassValue.NINE) {
-					return 15;
-				} else if (y.getValue() == JassValue.UNDER) {
-					return -20;
-				} else if (y.getValue() == JassValue.NINE) {
-					return -15;
-				} else {
-					return x.getValue().compareTo(y.getValue());
-				}
+				return Integer.compare(y.getValue().getPostitionTrump(), x.getValue().getPostitionTrump());
 			}).findFirst().orElse(null);
 		} else if (actualDirection == JassDirection.DOWNSIDE_UP) {
 			return moves.stream().filter(move -> move.getColor() == color)
-					.sorted((x, y) -> y.getValue().compareTo(x.getValue())).findFirst().orElse(null);
+					.sorted((x, y) -> Integer.compare(x.getValue().getPosition(), y.getValue().getPosition())).findFirst().orElse(null);
 		} else {
 			return moves.stream().filter(move -> move.getColor() == color)
-					.sorted((x, y) -> x.getValue().compareTo(y.getValue())).findFirst().orElse(null);
+					.sorted((x, y) -> Integer.compare(y.getValue().getPosition(), x.getValue().getPosition())).findFirst().orElse(null);
 		}
 	}
 }

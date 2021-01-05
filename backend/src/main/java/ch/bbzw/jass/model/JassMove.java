@@ -1,10 +1,13 @@
 package ch.bbzw.jass.model;
 
+import java.util.UUID;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.ManyToOne;
 
 import lombok.Data;
@@ -13,14 +16,15 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @NoArgsConstructor
-@IdClass(JassMoveId.class)
 public class JassMove {
 
-	@ManyToOne
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private UUID id;
+	
+	@ManyToOne
 	private JassRound round;
 
-	@Id
 	private Byte index;
 
 	@ManyToOne

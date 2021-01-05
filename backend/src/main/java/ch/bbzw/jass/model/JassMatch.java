@@ -68,6 +68,9 @@ public class JassMatch {
 	}
 
 	public int calculatePointsOfTeam(JassTeam team) {
-		return type.calculatePointsOfTeam(team, rounds);
+		if (type != null) {			
+			return type.calculatePointsOfTeam(team, rounds);
+		}
+		return 0;
 	}
 }

@@ -18,6 +18,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class JassGame {
+	public static final int WIN_POINTS = 3000;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -73,5 +74,20 @@ public class JassGame {
 	public int calculatePointsOfTeamTwo() {
 		JassTeam teamTwo = getTeams().get(1);
 		return calculatePointsOfTeam(teamTwo);
+	}
+	
+	public boolean isFinished() {
+		return calculatePointsOfTeamOne() >= WIN_POINTS || calculatePointsOfTeamTwo() >= WIN_POINTS;
+	}
+	
+	public JassTeam getWinnerTeam() {
+		if (calculatePointsOfTeamOne() >= WIN_POINTS) {
+			if (calculatePointsOfTeamTwo() < WIN_POINTS) {
+				return teams.get(0);
+			}
+		} else if (calculatePointsOfTeamTwo() >= WIN_POINTS) {
+			return teams.get(1);
+		}
+		return null;
 	}
 }

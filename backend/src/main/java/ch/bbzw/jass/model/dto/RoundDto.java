@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import ch.bbzw.jass.model.JassRound;
+import ch.bbzw.jass.model.JassUser;
 import lombok.Data;
 
 @Data
@@ -20,7 +21,10 @@ public class RoundDto {
 
 	public RoundDto(JassRound round) {
 		this.index = round.getIndex();
-		this.turnOf = new PlayerDto(round.getTurnOf());
+		JassUser player = round.getTurnOf();
+		if (player != null) {			
+			this.turnOf = new PlayerDto(player);
+		}
 		this.finished = round.isFinished();
 		this.moves = round.getMoves().stream().map(MoveDto::new).collect(Collectors.toList());
 	}

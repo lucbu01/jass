@@ -87,7 +87,7 @@ public class JassGameService {
 			}
 			team.getUsers().add(userService.getUser());
 			teamRepository.save(team);
-			update(new GameDto(game));
+			update(gameId, new GameDto(game));
 		}
 		return new GameDto(game, true);
 	}
@@ -97,7 +97,7 @@ public class JassGameService {
 		if (game.getAllPlayers().size() == 4) {
 			game.setStarted(true);
 			gameRepository.save(game);
-			update(new GameDto(game));
+			update(id, new GameDto(game));
 			mix(game);
 		} else {
 			throw new MessageException(new MessageDto("Spiel muss 4 Spieler enthalten", "/"));
@@ -134,6 +134,7 @@ public class JassGameService {
 				match.getHandItems().add(handItem);
 				if (match.getIndex() == 0 && card.equals(ACORN_TEN)) {
 					match.setAnnouncer(player);
+					message(game, new MessageDto(player.getName() + " darf ansagen"));
 				}
 			}
 		}
@@ -144,8 +145,9 @@ public class JassGameService {
 			int indexOfNewAnnouncer = indexOfLastAnnouncer == 3 ? 0 : indexOfLastAnnouncer + 1;
 			JassUser newAnnouncer = allPlayers.get(indexOfNewAnnouncer);
 			match.setAnnouncer(newAnnouncer);
+			message(game, new MessageDto(newAnnouncer.getName() + " darf ansagen"));
 		}
-		update(new GameDto(match));
+		update(game.getId(), new GameDto(match));
 		for (JassUser player : allPlayers) {
 			webSocket.convertAndSendToUser(player.getId().toString(), "/private/game/" + game.getId() + "/hand",
 					match.getHand(player));
@@ -171,21 +173,30 @@ public class JassGameService {
 				handRepository.delete(handItem);
 				match.getHandItems().remove(handItem);
 				JassMove move = moveRepository.save(new JassMove(round, (byte) round.getMoves().size(), user, card));
+				webSocket.convertAndSendToUser(user.getId().toString(), "/private/game/" + game.getId() + "/hand",
+						match.getHand(user));
 				round.getMoves().add(move);
-				update(new GameDto(round));
-				if (round.getMoves().size() == 4) {
-					message(game, new MessageDto("Die Runde ist beendet, der Gewinner darf anfangen ..."));
+				update(gameId, new GameDto(round));
+				if (round.getMoves().size() == 4) {							
+					JassUser winner = round.calculateWinner();
+					message(game, new MessageDto("Die Runde ist beendet. " + winner.getName() + " hat die Runde gewonnen."));
 					try {
 						Thread.sleep(2000);
 					} catch (Exception e) {
 					}
-					int teamOnePoints = game.calculatePointsOfTeamOne();
-					int teamTwoPoints = game.calculatePointsOfTeamTwo();
-					JassUser winner = round.calculateWinner();
-					round = roundRepository.save(new JassRound(match, (short) match.getRounds().size()));
-					match.getRounds().add(round);
-					update(new GameDto(round, teamOnePoints, teamTwoPoints));
-					message(winner, new MessageDto("Du darfst anfangen"));
+					if (!game.isFinished()) {		
+						if (match.getRounds().size() == 9) {
+							mix(game);
+						} else {
+							round = roundRepository.save(new JassRound(match, (short) match.getRounds().size()));
+							match.getRounds().add(round);
+							message(winner, new MessageDto("Du darfst anfangen"));
+							update(gameId, new GameDto(round, true));
+						}
+					} else {
+						message(game, new MessageDto("Das Spiel ist beendet"));
+						update(gameId, new GameDto(round, true));
+					}
 				} else {
 					JassUser nextTurn = round.getTurnOf();
 					message(nextTurn, new MessageDto("Du bist an der Reihe"));
@@ -207,7 +218,10 @@ public class JassGameService {
 			if (user.getId().equals(match.getDefinitiveAnnouncer().getId())) {
 				match.setType(gamemode);
 				matchRepository.save(match);
-				update(new GameDto(match));
+				update(gameId, new GameDto(match));
+				JassRound round = roundRepository.save(new JassRound(match, (short) match.getRounds().size()));
+				match.getRounds().add(round);
+				message(game, new MessageDto(round.getTurnOf().getName() + " darf beginnen"));
 			} else {
 				throw new MessageException(new MessageDto("Du darfst nicht ansagen"));
 			}
@@ -226,7 +240,7 @@ public class JassGameService {
 			} else {
 				match.setPushed(true);
 				matchRepository.save(match);
-				update(new GameDto(match));
+				update(gameId, new GameDto(match));
 				message(game, new MessageDto(user.getName() + " hat geschoben"));
 			}
 		} else {
@@ -234,8 +248,8 @@ public class JassGameService {
 		}
 	}
 
-	public void update(GameDto game) {
-		webSocket.convertAndSend("/public/game/" + game.getId(), game);
+	public void update(UUID gameId, GameDto game) {
+		webSocket.convertAndSend("/public/game/" + gameId, game);
 	}
 
 	private void message(JassGame game, MessageDto message) {

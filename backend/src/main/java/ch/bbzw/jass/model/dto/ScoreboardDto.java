@@ -3,6 +3,7 @@ package ch.bbzw.jass.model.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import ch.bbzw.jass.model.JassGame;
 import lombok.Data;
 
 @Data
@@ -10,15 +11,16 @@ import lombok.Data;
 public class ScoreboardDto {
 	int teamOnePoints;
 	int teamTwoPoints;
-	Integer winnerTeamIndex;
+	boolean finished;
+	Byte winnerTeamIndex;
 
-	public ScoreboardDto(int teamOnePoints, int teamTwoPoints) {
-		this.teamOnePoints = teamOnePoints;
-		this.teamTwoPoints = teamTwoPoints;
-		if (this.teamOnePoints >= 3000) {
-			winnerTeamIndex = 0;
-		} else if (this.teamTwoPoints >= 3000) {
-			winnerTeamIndex = 1;
+	public ScoreboardDto(JassGame game) {
+		this.teamOnePoints = game.calculatePointsOfTeamOne();
+		this.teamTwoPoints = game.calculatePointsOfTeamTwo();
+		boolean finished = game.isFinished();
+		this.finished = finished;
+		if (game.isFinished()) {
+			winnerTeamIndex = game.getWinnerTeam().getIndex();
 		}
 	}
 }
