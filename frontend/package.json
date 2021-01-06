@@ -9,7 +9,8 @@
     "build:prod": "ng build --prod",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "prePush": "npm install && npm run lint && npm run build:prod && cd ../backend && gradlew build sonarlintMain sonarlintTest"
   },
   "private": true,
   "dependencies": {
