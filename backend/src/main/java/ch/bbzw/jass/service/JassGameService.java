@@ -223,7 +223,7 @@ public class JassGameService {
 				update(game.getId(), new GameDto(round, true));
 			}
 		} else {
-			message(game, new MessageDto("Das Spiel ist beendet"));
+			message(game, new MessageDto("Das Spiel ist beendet", "/history/" + game.getId()));
 			update(game.getId(), new GameDto(round, true));
 		}
 	}

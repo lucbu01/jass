@@ -1,0 +1,56 @@
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: stretch;
+  align-items: stretch;
+  background-color: #349255;
+}
+
+.spinner-container,
+.history-container,
+.not-found-container {
+  flex: 1 1 auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  overflow: auto;
+
+  h1,
+  h2,
+  h3 {
+    text-align: center;
+    color: white;
+  }
+}
+
+.spinner-container {
+  align-items: center;
+}
+
+.splitter {
+  flex: 0 0 100%;
+}
+
+.margin {
+  margin-bottom: 20px;
+}
+
+mat-card {
+  margin: 10px;
+
+  img {
+    background-color: lightgray;
+  }
+}
+
+.card {
+  margin: 0 5px;
+}
+
+mat-divider {
+  border-color: white;
+}

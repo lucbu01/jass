@@ -13,12 +13,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { HttpClientModule } from '@angular/common/http';
 import { WebSocketService } from './services/web-socket.service';
 import { PlaygroundComponent } from './playground/playground.component';
 import { LobbyComponent } from './lobby/lobby.component';
 import { JoinDialogComponent } from './menu/join-dialog/join-dialog.component';
+import { HistoryComponent } from './history/history.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +29,7 @@ import { JoinDialogComponent } from './menu/join-dialog/join-dialog.component';
     PlaygroundComponent,
     LobbyComponent,
     JoinDialogComponent,
+    HistoryComponent,
   ],
   imports: [
     BrowserModule,
@@ -41,6 +44,7 @@ import { JoinDialogComponent } from './menu/join-dialog/join-dialog.component';
     MatSnackBarModule,
     MatDialogModule,
     MatProgressSpinnerModule,
+    MatDividerModule,
     MatTooltipModule,
     HttpClientModule,
   ],
