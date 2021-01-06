@@ -45,16 +45,17 @@ public class JassGameServiceTest {
 	JassHandRepository handRepository;
 	@Mock
 	JassUserService userService;
-	
+
 	JassGameService testee;
-	
+
 	@BeforeEach
 	public void setUp() {
-		testee = new JassGameService(webSocket, gameRepository, teamRepository, matchRepository, roundRepository, moveRepository, handRepository, userService);
+		testee = new JassGameService(webSocket, gameRepository, teamRepository, matchRepository, roundRepository,
+				moveRepository, handRepository, userService);
 	}
-	 
+
 	@Test
-	public void test() {
+	public void createNewGameTest() {
 		JassGame game = mock(JassGame.class);
 		JassUser user = new JassUser("Name", "Password");
 		JassTeam team1 = new JassTeam(game, (byte) 0);
@@ -66,11 +67,11 @@ public class JassGameServiceTest {
 		expect(teamRepository.save(team2)).andReturn(team2);
 		expect(game.getId()).andReturn(UUID.fromString("f4844da0-dc00-4c1b-a2b4-f8c4f1949c72"));
 		replay(game, gameRepository, teamRepository, matchRepository, roundRepository, moveRepository, userService);
-		
+
 		UUID gameId = testee.createNewGame();
-		
+
 		verify(game, gameRepository, teamRepository, matchRepository, roundRepository, moveRepository, userService);
 		assertEquals(UUID.fromString("f4844da0-dc00-4c1b-a2b4-f8c4f1949c72"), gameId);
 	}
-	 
+
 }

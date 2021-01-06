@@ -52,12 +52,6 @@ public class JassCards {
 	}
 
 	public static List<JassCard> sort(List<JassCard> cards) {
-		return cards.stream().sorted((x, y) -> {
-			if (x.getColor().equals(y.getColor())) {
-				return x.getValue().compareTo(y.getValue());
-			} else {
-				return x.getColor().compareTo(y.getColor());
-			}
-		}).collect(Collectors.toList());
+		return cards.stream().sorted((x, y) -> x.compareTo(y)).collect(Collectors.toList());
 	}
 }
