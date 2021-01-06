@@ -27,7 +27,8 @@
           *ngIf="playedCard"
           src="../../assets/cards/{{ playedCard }}.png"
           onerror="this.style.display='none'"
-        />
+        />^
+        <mat-spinner *ngIf="!game"></mat-spinner>
       </div>
     </div>
   </div>
@@ -48,6 +49,7 @@
       src="../../assets/match-types/{{ game.match.type }}.png"
       alt="Angesagt"
     />
+    <h2>3000</h2>
   </div>
   <div class="card">
     <mat-card>
@@ -77,51 +79,61 @@
     <mat-card-content>
       <img
         alt="Eichel"
+        matTooltip="Eichel"
         src="../../assets/match-types/ACORN.png"
         (click)="announce('ACORN')"
       />
       <img
         alt="Schelle"
+        matTooltip="Schelle"
         src="../../assets/match-types/CLAMP.png"
         (click)="announce('CLAMP')"
       />
       <img
         alt="Schilte"
+        matTooltip="Schilte"
         src="../../assets/match-types/SHIELD.png"
         (click)="announce('SHIELD')"
       />
       <img
         alt="Rose"
+        matTooltip="Rose"
         src="../../assets/match-types/ROSE.png"
         (click)="announce('ROSE')"
       />
       <img
         alt="Obenabe"
+        matTooltip="Obenabe"
         src="../../assets/match-types/UPSIDE_DOWN.png"
         (click)="announce('UPSIDE_DOWN')"
       />
       <img
         alt="Undenufe"
+        matTooltip="Undenufe"
         src="../../assets/match-types/DOWNSIDE_UP.png"
         (click)="announce('DOWNSIDE_UP')"
       />
       <img
         alt="Gusti"
+        matTooltip="Gusti"
         src="../../assets/match-types/GUSTI.png"
         (click)="announce('GUSTI')"
       />
       <img
         alt="Merry"
+        matTooltip="Merry"
         src="../../assets/match-types/MERRY.png"
         (click)="announce('MERRY')"
       />
       <img
         alt="Slalom (von oben)"
+        matTooltip="Slalom (von oben)"
         src="../../assets/match-types/SLALOM_UP.png"
         (click)="announce('SLALOM_UP')"
       />
       <img
         alt="Slalom (von unten)"
+        matTooltip="Slalom (von unten)"
         src="../../assets/match-types/SLALOM_DOWN.png"
         (click)="announce('SLALOM_DOWN')"
       />

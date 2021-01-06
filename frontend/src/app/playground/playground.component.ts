@@ -25,7 +25,7 @@ export class PlaygroundComponent implements OnInit {
   gameSubscription?: Subscription;
   handSubscription?: Subscription;
   hand: any = [];
-  game: any = {};
+  game: any;
   hasToAnnounce = false;
   playerIds: string[] = [];
   myIndex = 0;
@@ -60,7 +60,7 @@ export class PlaygroundComponent implements OnInit {
                     this.hand = hand;
                   });
               }
-              this.game = this.assignDeep(this.game, game);
+              this.game = this.assignDeep(this.game ? this.game : {}, game);
               this.playerName1 = this.game.teams[0].players[0].name;
               this.playerName2 = this.game.teams[0].players[1].name;
               this.playerName3 = this.game.teams[1].players[0].name;

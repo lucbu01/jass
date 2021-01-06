@@ -12,6 +12,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { HttpClientModule } from '@angular/common/http';
 import { WebSocketService } from './services/web-socket.service';
 import { PlaygroundComponent } from './playground/playground.component';
@@ -38,6 +40,8 @@ import { JoinDialogComponent } from './menu/join-dialog/join-dialog.component';
     MatButtonModule,
     MatSnackBarModule,
     MatDialogModule,
+    MatProgressSpinnerModule,
+    MatTooltipModule,
     HttpClientModule,
   ],
   providers: [WebSocketService],
