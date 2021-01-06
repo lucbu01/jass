@@ -104,15 +104,17 @@ public enum JassMatchType {
 			actualDirection = direction.getActualDirection(roundIndex);
 		}
 		if (color == trumpColor) {
-			return moves.stream().filter(move -> move.getColor() == color).sorted((x, y) -> {
-				return Integer.compare(y.getValue().getPostitionTrump(), x.getValue().getPostitionTrump());
-			}).findFirst().orElse(null);
+			return moves.stream().filter(move -> move.getColor() == color).sorted(
+					(x, y) -> Integer.compare(y.getValue().getPostitionTrump(), x.getValue().getPostitionTrump()))
+					.findFirst().orElse(null);
 		} else if (actualDirection == JassDirection.DOWNSIDE_UP) {
 			return moves.stream().filter(move -> move.getColor() == color)
-					.sorted((x, y) -> Integer.compare(x.getValue().getPosition(), y.getValue().getPosition())).findFirst().orElse(null);
+					.sorted((x, y) -> Integer.compare(x.getValue().getPosition(), y.getValue().getPosition()))
+					.findFirst().orElse(null);
 		} else {
 			return moves.stream().filter(move -> move.getColor() == color)
-					.sorted((x, y) -> Integer.compare(y.getValue().getPosition(), x.getValue().getPosition())).findFirst().orElse(null);
+					.sorted((x, y) -> Integer.compare(y.getValue().getPosition(), x.getValue().getPosition()))
+					.findFirst().orElse(null);
 		}
 	}
 }

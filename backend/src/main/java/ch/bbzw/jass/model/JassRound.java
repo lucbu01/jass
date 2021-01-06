@@ -2,6 +2,7 @@ package ch.bbzw.jass.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -77,7 +78,8 @@ public class JassRound {
 			long count = hand.stream().filter(c -> c.getColor() == color).count();
 			boolean isTrumpUnder = false;
 			if (count == 1 && color == match.getType().getTrumpColor()) {
-				isTrumpUnder = hand.stream().filter(c -> c.getColor() == color).findFirst().get().getValue() == JassValue.UNDER;
+				Optional<JassCard> colorCard = hand.stream().filter(c -> c.getColor() == color).findFirst();
+				isTrumpUnder = colorCard.isPresent() && colorCard.get().getValue() == JassValue.UNDER;
 			}
 			return color == null || color == card.getColor() || match.getType().getTrumpColor() == card.getColor()
 					|| count == 0 || isTrumpUnder;
@@ -86,7 +88,7 @@ public class JassRound {
 	}
 
 	public JassColor getColor() {
-		if (this.moves.size() > 0) {
+		if (!this.moves.isEmpty()) {
 			return this.moves.get(0).getColor();
 		} else {
 			return null;

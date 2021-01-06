@@ -27,7 +27,7 @@ public class AuthChannelInterceptorAdapter implements ChannelInterceptor {
 	public Message<?> preSend(Message<?> message, MessageChannel channel) {
 		final StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
-		if (StompCommand.CONNECT == accessor.getCommand()) {
+		if (accessor != null && StompCommand.CONNECT == accessor.getCommand()) {
 			List<String> authorization = accessor.getNativeHeader("user");
 
 			if (authorization != null && !authorization.isEmpty()) {

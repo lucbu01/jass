@@ -5,13 +5,13 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MenuComponent } from './menu/menu.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {MatCardModule} from '@angular/material/card';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import {MatInputModule} from '@angular/material/input';
-import {MatButtonModule} from '@angular/material/button';
-import {MatSnackBarModule} from '@angular/material/snack-bar';
-import {MatDialogModule} from '@angular/material/dialog';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialogModule } from '@angular/material/dialog';
 import { HttpClientModule } from '@angular/common/http';
 import { WebSocketService } from './services/web-socket.service';
 import { PlaygroundComponent } from './playground/playground.component';
@@ -24,7 +24,7 @@ import { JoinDialogComponent } from './menu/join-dialog/join-dialog.component';
     MenuComponent,
     PlaygroundComponent,
     LobbyComponent,
-    JoinDialogComponent
+    JoinDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -38,11 +38,9 @@ import { JoinDialogComponent } from './menu/join-dialog/join-dialog.component';
     MatButtonModule,
     MatSnackBarModule,
     MatDialogModule,
-    HttpClientModule
+    HttpClientModule,
   ],
-  providers: [
-    WebSocketService
-  ],
-  bootstrap: [AppComponent]
+  providers: [WebSocketService],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

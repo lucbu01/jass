@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class JassCards {
+
+	private JassCards() {
+	}
+	
 	private static final JassCard[] CARDS = new JassCard[] {
 			new JassCard(JassColor.CLAMP, JassValue.SIX),
 			new JassCard(JassColor.CLAMP, JassValue.SEVEN),

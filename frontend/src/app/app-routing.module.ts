@@ -7,11 +7,11 @@ import { PlaygroundComponent } from './playground/playground.component';
 const routes: Routes = [
   { path: '', component: MenuComponent },
   { path: 'play/:id', component: PlaygroundComponent },
-  { path: 'lobby/:id', component: LobbyComponent }
+  { path: 'lobby/:id', component: LobbyComponent },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

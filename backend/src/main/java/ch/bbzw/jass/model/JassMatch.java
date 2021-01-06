@@ -55,20 +55,20 @@ public class JassMatch {
 	}
 
 	public List<JassCard> getHand(JassUser player) {
-		return JassCards.sort(getHandItems(player).stream().map(item -> item.getCard()).collect(Collectors.toList()));
+		return JassCards.sort(getHandItems(player).stream().map(JassHand::getCard).collect(Collectors.toList()));
 	}
 
 	public JassUser getDefinitiveAnnouncer() {
 		if (isPushed()) {
 			JassTeam team = getGame().getTeams().stream().filter(t -> t.getUsers().contains(getAnnouncer())).findFirst()
 					.get();
-			return team.getUsers().stream().filter(p -> !p.equals(getAnnouncer())).findFirst().get();
+			return team.getUsers().stream().filter(p -> !p.equals(getAnnouncer())).findFirst().orElse(null);
 		}
 		return getAnnouncer();
 	}
 
 	public int calculatePointsOfTeam(JassTeam team) {
-		if (type != null) {			
+		if (type != null) {
 			return type.calculatePointsOfTeam(team, rounds);
 		}
 		return 0;
