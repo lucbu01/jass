@@ -15,8 +15,9 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import ch.bbzw.jass.exception.MessageException;
+import ch.bbzw.jass.helper.JassCards;
+import ch.bbzw.jass.helper.JassRules;
 import ch.bbzw.jass.model.JassCard;
-import ch.bbzw.jass.model.JassCards;
 import ch.bbzw.jass.model.JassColor;
 import ch.bbzw.jass.model.JassGame;
 import ch.bbzw.jass.model.JassHand;
@@ -164,35 +165,41 @@ public class JassGameService {
 		JassMatch match = game.getMatches().get(game.getMatches().size() - 1);
 		JassUser user = userService.getUser();
 		JassRound round;
+
+		if (game.getStarted() == null || game.getStarted().equals(false)) {
+			throw new MessageException(new MessageDto("Das Spiel wurde noch nicht gestartet", "/lobby/" + gameId));
+		}
+		if (match.getType() == null) {
+			throw new MessageException(new MessageDto("Es wurde noch nicht angesagt"));
+		}
+		if (game.isFinished()) {
+			throw new MessageException(new MessageDto("Das Spiel wurde bereits beendet", "/history/" + gameId));
+		}
+
 		if (match.getRounds().isEmpty() || match.getRounds().get(match.getRounds().size() - 1).getMoves().size() == 4) {
 			round = roundRepository.save(new JassRound(match, (short) match.getRounds().size()));
 			match.getRounds().add(round);
 		} else {
 			round = match.getRounds().get(match.getRounds().size() - 1);
 		}
-		if (round.isTheTurn(user)) {
-			JassHand handItem = match.getHandItems(user).stream().filter(itm -> itm.getCard().equals(card)).findFirst()
-					.orElseThrow(() -> new MessageException(new MessageDto("Die Karte ist nicht in deinem Besitz")));
-			if (round.canPlay(card)) {
-				handRepository.delete(handItem);
-				match.getHandItems().remove(handItem);
-				JassMove move = moveRepository.save(new JassMove(round, (byte) round.getMoves().size(), user, card));
-				webSocket.convertAndSendToUser(user.getId().toString(), "/private/game/" + game.getId() + "/hand",
-						match.getHand(user));
-				round.getMoves().add(move);
-				update(gameId, new GameDto(round));
-				if (round.getMoves().size() == 4) {
-					finishRound(round);
-				} else {
-					JassUser nextTurn = round.getTurnOf();
-					message(nextTurn, new MessageDto("Du bist an der Reihe"));
-				}
-			} else {
-				throw new MessageException(
-						new MessageDto("Du kannst diese Karte nicht spielen. Bitte halte dich an die Jass-Regeln!"));
-			}
+
+		JassRules.checkCanPlay(card, round, user);
+		JassHand handItem = match.getHandItems(user).stream().filter(itm -> itm.getCard().equals(card)).findFirst()
+				.orElseThrow(() -> new MessageException(new MessageDto("Die Karte ist nicht in deinem Besitz")));
+		handRepository.delete(handItem);
+		match.getHandItems().remove(handItem);
+		JassMove move = moveRepository.save(new JassMove(round, (byte) round.getMoves().size(), user, card));
+		webSocket.convertAndSendToUser(user.getId().toString(), "/private/game/" + game.getId() + "/hand",
+				match.getHand(user));
+		round.getMoves().add(move);
+
+		update(gameId, new GameDto(round));
+
+		if (round.getMoves().size() == 4) {
+			finishRound(round);
 		} else {
-			throw new MessageException(new MessageDto("Du bist nicht an der Reihe"));
+			JassUser nextTurn = round.getTurnOf();
+			message(nextTurn, new MessageDto("Du bist an der Reihe"));
 		}
 	}
 
@@ -229,10 +236,10 @@ public class JassGameService {
 			if (user.getId().equals(match.getDefinitiveAnnouncer().getId())) {
 				match.setType(gamemode);
 				matchRepository.save(match);
-				update(gameId, new GameDto(match));
 				JassRound round = roundRepository.save(new JassRound(match, (short) match.getRounds().size()));
 				match.getRounds().add(round);
 				message(game, new MessageDto(round.getTurnOf().getName() + " darf beginnen"));
+				update(gameId, new GameDto(match));
 			} else {
 				throw new MessageException(new MessageDto("Du darfst nicht ansagen"));
 			}
@@ -247,12 +254,13 @@ public class JassGameService {
 		JassUser user = userService.getUser();
 		if (user.getId().equals(match.getDefinitiveAnnouncer().getId())) {
 			if (match.isPushed()) {
+				update(gameId, new GameDto(match));
 				throw new MessageException(new MessageDto("Es wurde schon geschoben"));
 			} else {
 				match.setPushed(true);
 				matchRepository.save(match);
-				update(gameId, new GameDto(match));
 				message(game, new MessageDto(user.getName() + " hat geschoben"));
+				update(gameId, new GameDto(match));
 			}
 		} else {
 			throw new MessageException(new MessageDto("Du darfst nicht ansagen"));

@@ -53,6 +53,12 @@ export class PlaygroundComponent implements OnInit {
           this.gameSubscription = this.webSocketService
             .data<any>(`/public/game/${data.id}`)
             .subscribe((game) => {
+              if (game.scoreboard && game.scoreboard.finished) {
+                this.router.navigate(['history', game.id]);
+              }
+              if (game.started === false) {
+                this.router.navigate(['lobby', game.id]);
+              }
               if (!this.handSubscription) {
                 this.handSubscription = this.webSocketService
                   .data<any>(`/user/private/game/${game.id}/hand`)

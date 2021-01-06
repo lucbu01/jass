@@ -20,27 +20,25 @@ export class LobbyComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    setTimeout(
-      () =>
-        this.subscriptions.push(
-          this.route.params.subscribe((data) => {
-            if (this.gameSubscription) {
-              this.gameSubscription.unsubscribe();
-            }
-            if (data.id) {
-              this.gameSubscription = this.webSocketService
-                .data<any>(`/public/game/${data.id}`)
-                .subscribe((game) => {
-                  this.game = game;
-                  if (this.game.started) {
-                    this.router.navigate(['/play', this.game.id]);
-                    console.log(`Game ${this.game.id} started!`);
-                  }
-                });
-            }
-          })
-        ),
-      1000
+    setTimeout(() =>
+      this.subscriptions.push(
+        this.route.params.subscribe((data) => {
+          if (this.gameSubscription) {
+            this.gameSubscription.unsubscribe();
+          }
+          if (data.id) {
+            this.gameSubscription = this.webSocketService
+              .data<any>(`/public/game/${data.id}`)
+              .subscribe((game) => {
+                this.game = game;
+                if (this.game.started) {
+                  this.router.navigate(['/play', this.game.id]);
+                  console.log(`Game ${this.game.id} started!`);
+                }
+              });
+          }
+        })
+      )
     );
   }
 
