@@ -17,8 +17,8 @@ public class ScoreboardDto {
 	public ScoreboardDto(JassGame game) {
 		this.teamOnePoints = game.calculatePointsOfTeamOne();
 		this.teamTwoPoints = game.calculatePointsOfTeamTwo();
-		boolean finished = game.isFinished();
-		this.finished = finished;
+		boolean f = game.isFinished();
+		this.finished = f;
 		if (game.isFinished()) {
 			winnerTeamIndex = game.getWinnerTeam().getIndex();
 		}

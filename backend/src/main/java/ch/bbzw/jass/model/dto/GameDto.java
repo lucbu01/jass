@@ -32,12 +32,12 @@ public class GameDto {
 		this.id = game.getId();
 		this.teams = game.getTeams().stream().map(TeamDto::new).collect(Collectors.toList());
 		this.started = game.getStarted();
-		if (game.getMatches().size() > 0) {
-			JassMatch match = game.getMatches().get(game.getMatches().size() - 1);
-			this.match = new MatchDto(match.getIndex(), new PlayerDto(match.getAnnouncer()),
-					new PlayerDto(match.getDefinitiveAnnouncer()), match.isPushed(), match.getType());
-			if (match.getRounds().size() > 0) {
-				this.round = new RoundDto(match.getRounds().get(match.getRounds().size() - 1));
+		if (full && !game.getMatches().isEmpty()) {
+			JassMatch m = game.getMatches().get(game.getMatches().size() - 1);
+			this.match = new MatchDto(m.getIndex(), new PlayerDto(m.getAnnouncer()),
+					new PlayerDto(m.getDefinitiveAnnouncer()), m.isPushed(), m.getType());
+			if (!m.getRounds().isEmpty()) {
+				this.round = new RoundDto(m.getRounds().get(m.getRounds().size() - 1));
 			}
 			this.scoreboard = new ScoreboardDto(game);
 		}

@@ -15,7 +15,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import ch.bbzw.jass.exception.MessageException;
 import ch.bbzw.jass.model.JassUser;
+import ch.bbzw.jass.model.dto.MessageDto;
 import ch.bbzw.jass.repository.JassUserRepository;
 
 @Service
@@ -37,11 +39,12 @@ public class JassUserService implements UserDetailsService {
 	}
 
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		try {
-			return userRepository.findById(UUID.fromString(username)).get();
-		} catch (Exception e) {
-			log.warn("User not found: {}", username, e);
+	public UserDetails loadUserByUsername(String username) {
+		Optional<JassUser> user = userRepository.findById(UUID.fromString(username));
+		if (user.isPresent()) {
+			return user.get();
+		} else {
+			log.warn("User not found: {}", username);
 			throw new UsernameNotFoundException("username not found");
 		}
 	}
@@ -66,7 +69,12 @@ public class JassUserService implements UserDetailsService {
 	}
 
 	public JassUser getUser() {
-		return getLoggedInUser().get();
+		Optional<JassUser> logggedInUser = getLoggedInUser();
+		if (logggedInUser.isPresent()) {
+			return logggedInUser.get();
+		} else {
+			throw new MessageException(new MessageDto("Nicht eingeloggt"));
+		}
 	}
 
 }

@@ -27,7 +27,7 @@ import ch.bbzw.jass.repository.JassRoundRepository;
 import ch.bbzw.jass.repository.JassTeamRepository;
 
 @ExtendWith(EasyMockExtension.class)
-public class JassGameServiceTest {
+class JassGameServiceTest {
 
 	@Mock
 	SimpMessagingTemplate webSocket;
@@ -55,7 +55,7 @@ public class JassGameServiceTest {
 	}
 
 	@Test
-	public void createNewGameTest() {
+	void createNewGameTest() {
 		JassGame game = mock(JassGame.class);
 		JassUser user = new JassUser("Name", "Password");
 		JassTeam team1 = new JassTeam(game, (byte) 0);

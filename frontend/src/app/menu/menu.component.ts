@@ -9,24 +9,35 @@ import { JoinDialogComponent } from './join-dialog/join-dialog.component';
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.scss']
+  styleUrls: ['./menu.component.scss'],
 })
 export class MenuComponent implements OnInit, OnDestroy {
   name = '';
   subscriptions: Subscription[] = [];
 
-  constructor(private http: HttpClient, private webSocketService: WebSocketService, private router: Router, private dialog: MatDialog) { }
+  constructor(
+    private http: HttpClient,
+    private webSocketService: WebSocketService,
+    private router: Router,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit(): void {
     this.subscriptions.push(
-      this.webSocketService.tryConnect().subscribe(result => console.log(`WebSocket connected: ${result}`)),
-      this.webSocketService.event<string>('/user/private/name').subscribe(name => this.name = name),
-      this.webSocketService.event<string>('/user/private/game/created').subscribe(game => this.router.navigate(['/lobby', game]))
+      this.webSocketService
+        .tryConnect()
+        .subscribe((result) => console.log(`WebSocket connected: ${result}`)),
+      this.webSocketService
+        .event<string>('/user/private/name')
+        .subscribe((name) => (this.name = name)),
+      this.webSocketService
+        .event<string>('/user/private/game/created')
+        .subscribe((game) => this.router.navigate(['/lobby', game]))
     );
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
   create(): void {
@@ -34,11 +45,16 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   join(): void {
-    this.setUsername(() => this.dialog.open(JoinDialogComponent).afterClosed().subscribe(data => {
-      if (data) {
-        this.router.navigate(['/lobby', data]);
-      }
-    }));
+    this.setUsername(() =>
+      this.dialog
+        .open(JoinDialogComponent)
+        .afterClosed()
+        .subscribe((data) => {
+          if (data) {
+            this.router.navigate(['/lobby', data]);
+          }
+        })
+    );
   }
 
   setUsername(callback: () => void): void {
@@ -46,14 +62,16 @@ export class MenuComponent implements OnInit, OnDestroy {
       this.webSocketService.sendString('/private/name', this.name);
       callback();
     } else {
-      this.http.post<string>('/api/name', JSON.stringify(this.name)).subscribe(uuid => {
-        this.webSocketService.tryConnect(uuid).subscribe(result => {
-          console.log(`WebSocket connected: ${result}`);
-          if (result === true) {
-            setTimeout(() => callback());
-          }
+      this.http
+        .post<string>('/api/name', JSON.stringify(this.name))
+        .subscribe((uuid) => {
+          this.webSocketService.tryConnect(uuid).subscribe((result) => {
+            console.log(`WebSocket connected: ${result}`);
+            if (result === true) {
+              setTimeout(() => callback());
+            }
+          });
         });
-      });
     }
   }
 }

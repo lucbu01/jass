@@ -8,6 +8,8 @@ import java.util.UUID;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -38,7 +40,10 @@ import ch.bbzw.jass.repository.JassTeamRepository;
 @Transactional
 public class JassGameService {
 
+	private static final Logger log = LoggerFactory.getLogger(JassGameService.class);
+
 	public static final JassCard ACORN_TEN = new JassCard(JassColor.ACORN, JassValue.TEN);
+	public static final String GAME_NOT_FOUND = "Spiel wurde nicht gefunden";
 
 	private SimpMessagingTemplate webSocket;
 	private JassGameRepository gameRepository;
@@ -75,10 +80,10 @@ public class JassGameService {
 
 	public GameDto joinGame(UUID gameId) {
 		JassGame game = gameRepository.findById(gameId)
-				.orElseThrow(() -> new MessageException(new MessageDto("Spiel wurde nicht gefunden", "/")));
+				.orElseThrow(() -> new MessageException(new MessageDto(GAME_NOT_FOUND, "/")));
 		JassTeam team = game.getTeams().get(0);
-		if (!game.getTeams().stream()
-				.anyMatch(t -> t.getUsers().stream().anyMatch(u -> u.getId().equals(userService.getUser().getId())))) {
+		if (game.getTeams().stream()
+				.noneMatch(t -> t.getUsers().stream().anyMatch(u -> u.getId().equals(userService.getUser().getId())))) {
 			if (team.getUsers().size() > 1) {
 				team = game.getTeams().get(1);
 			}
@@ -106,11 +111,11 @@ public class JassGameService {
 
 	public JassGame get(UUID id) {
 		JassGame game = gameRepository.findById(id)
-				.orElseThrow(() -> new MessageException(new MessageDto("Spiel wurde nicht gefunden", "/")));
+				.orElseThrow(() -> new MessageException(new MessageDto(GAME_NOT_FOUND, "/")));
 		if (game.getAllPlayers().contains(userService.getUser())) {
 			return game;
 		} else {
-			throw new MessageException(new MessageDto("Spiel wurde nicht gefunden", "/"));
+			throw new MessageException(new MessageDto(GAME_NOT_FOUND, "/"));
 		}
 	}
 
@@ -159,8 +164,7 @@ public class JassGameService {
 		JassMatch match = game.getMatches().get(game.getMatches().size() - 1);
 		JassUser user = userService.getUser();
 		JassRound round;
-		if (match.getRounds().size() == 0
-				|| match.getRounds().get(match.getRounds().size() - 1).getMoves().size() == 4) {
+		if (match.getRounds().isEmpty() || match.getRounds().get(match.getRounds().size() - 1).getMoves().size() == 4) {
 			round = roundRepository.save(new JassRound(match, (short) match.getRounds().size()));
 			match.getRounds().add(round);
 		} else {
@@ -177,26 +181,8 @@ public class JassGameService {
 						match.getHand(user));
 				round.getMoves().add(move);
 				update(gameId, new GameDto(round));
-				if (round.getMoves().size() == 4) {							
-					JassUser winner = round.calculateWinner();
-					message(game, new MessageDto("Die Runde ist beendet. " + winner.getName() + " hat die Runde gewonnen."));
-					try {
-						Thread.sleep(2000);
-					} catch (Exception e) {
-					}
-					if (!game.isFinished()) {		
-						if (match.getRounds().size() == 9) {
-							mix(game);
-						} else {
-							round = roundRepository.save(new JassRound(match, (short) match.getRounds().size()));
-							match.getRounds().add(round);
-							message(winner, new MessageDto("Du darfst anfangen"));
-							update(gameId, new GameDto(round, true));
-						}
-					} else {
-						message(game, new MessageDto("Das Spiel ist beendet"));
-						update(gameId, new GameDto(round, true));
-					}
+				if (round.getMoves().size() == 4) {
+					finishRound(round);
 				} else {
 					JassUser nextTurn = round.getTurnOf();
 					message(nextTurn, new MessageDto("Du bist an der Reihe"));
@@ -207,6 +193,31 @@ public class JassGameService {
 			}
 		} else {
 			throw new MessageException(new MessageDto("Du bist nicht an der Reihe"));
+		}
+	}
+
+	private void finishRound(JassRound round) {
+		JassUser winner = round.calculateWinner();
+		JassMatch match = round.getMatch();
+		JassGame game = match.getGame();
+		message(game, new MessageDto("Die Runde ist beendet. " + winner.getName() + " hat die Runde gewonnen."));
+		try {
+			Thread.sleep(2000);
+		} catch (Exception e) {
+			log.error("Thread sleep exception", e);
+		}
+		if (!game.isFinished()) {
+			if (match.getRounds().size() == 9) {
+				mix(game);
+			} else {
+				round = roundRepository.save(new JassRound(match, (short) match.getRounds().size()));
+				match.getRounds().add(round);
+				message(winner, new MessageDto("Du darfst anfangen"));
+				update(game.getId(), new GameDto(round, true));
+			}
+		} else {
+			message(game, new MessageDto("Das Spiel ist beendet"));
+			update(game.getId(), new GameDto(round, true));
 		}
 	}
 

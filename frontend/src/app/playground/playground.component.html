@@ -1,61 +1,133 @@
 <div class="grid-playground">
-    <div class="playground">
-        <div class="carpet">
-            <div class="carpet card1">
-                <img *ngIf="playedCardMate" src="../../assets/cards/{{playedCardMate}}.png" onerror="this.style.display='none'">
-            </div>
-            <div class="carpet card2">
-                <img *ngIf="playedCardOpponent1" src="../../assets/cards/{{playedCardOpponent1}}.png" onerror="this.style.display='none'">
-            </div>
-            <div class="carpet card3">
-                <img *ngIf="playedCardOpponent2" src="../../assets/cards/{{playedCardOpponent2}}.png" onerror="this.style.display='none'">
-            </div>
-            <div class="carpet card4">
-                <img *ngIf="playedCard" src="../../assets/cards/{{playedCard}}.png" onerror="this.style.display='none'">
-            </div>
-        </div>
+  <div class="playground">
+    <div class="carpet">
+      <div class="carpet card1">
+        <img
+          *ngIf="playedCardMate"
+          src="../../assets/cards/{{ playedCardMate }}.png"
+          onerror="this.style.display='none'"
+        />
+      </div>
+      <div class="carpet card2">
+        <img
+          *ngIf="playedCardOpponent1"
+          src="../../assets/cards/{{ playedCardOpponent1 }}.png"
+          onerror="this.style.display='none'"
+        />
+      </div>
+      <div class="carpet card3">
+        <img
+          *ngIf="playedCardOpponent2"
+          src="../../assets/cards/{{ playedCardOpponent2 }}.png"
+          onerror="this.style.display='none'"
+        />
+      </div>
+      <div class="carpet card4">
+        <img
+          *ngIf="playedCard"
+          src="../../assets/cards/{{ playedCard }}.png"
+          onerror="this.style.display='none'"
+        />
+      </div>
     </div>
-    <div class="card">
-        <mat-card>
-            <mat-card-content>
-                <mat-card-title class="card title">Team 1</mat-card-title>
-                <mat-label class="card name">{{playerName1}} & {{playerName2}}</mat-label><br>
-                <mat-label class="card score">{{scoreTeam1}}</mat-label>
-            </mat-card-content>
-        </mat-card>
-    </div>
-    <div class="card">
-        <img *ngIf="game && game.match && game.match.type" src="../../assets/match-types/{{game.match.type}}.png" alt="Angesagt">
-    </div>
-    <div class="card">
-        <mat-card>
-            <mat-card-content>
-                <mat-card-title class="card title">Team 2</mat-card-title>
-                <mat-label class="card name">{{playerName3}} & {{playerName4}}</mat-label><br>
-                <mat-label class="card score">{{scoreTeam2}}</mat-label>
-            </mat-card-content>
-        </mat-card>
-    </div>
-    <div></div> <!-- empty grid space -->
-    <div class="cards">
-        <img *ngFor="let card of hand" (click)="cardClick(card)" src="../../assets/cards/{{card.color}}_{{card.value}}.png" onerror="this.style.display='none'">
-    </div>    
+  </div>
+  <div class="card">
+    <mat-card>
+      <mat-card-content>
+        <mat-card-title class="card title">Team 1</mat-card-title>
+        <mat-label class="card name"
+          >{{ playerName1 }} & {{ playerName2 }}</mat-label
+        ><br />
+        <mat-label class="card score">{{ scoreTeam1 }}</mat-label>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <div class="card">
+    <img
+      *ngIf="game && game.match && game.match.type"
+      src="../../assets/match-types/{{ game.match.type }}.png"
+      alt="Angesagt"
+    />
+  </div>
+  <div class="card">
+    <mat-card>
+      <mat-card-content>
+        <mat-card-title class="card title">Team 2</mat-card-title>
+        <mat-label class="card name"
+          >{{ playerName3 }} & {{ playerName4 }}</mat-label
+        ><br />
+        <mat-label class="card score">{{ scoreTeam2 }}</mat-label>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <div></div>
+  <!-- empty grid space -->
+  <div class="cards">
+    <img
+      *ngFor="let card of hand"
+      (click)="cardClick(card)"
+      src="../../assets/cards/{{ card.color }}_{{ card.value }}.png"
+      onerror="this.style.display='none'"
+    />
+  </div>
 </div>
 <div *ngIf="hasToAnnounce" class="announce-overlay">
-    <mat-card>
-        <mat-card-title>Du musst ansagen</mat-card-title>
-        <mat-card-content>
-            <img alt="Eichel" src="../../assets/match-types/ACORN.png" (click)="announce('ACORN')">
-            <img alt="Schelle" src="../../assets/match-types/CLAMP.png" (click)="announce('CLAMP')">
-            <img alt="Schilte" src="../../assets/match-types/SHIELD.png" (click)="announce('SHIELD')">
-            <img alt="Rose" src="../../assets/match-types/ROSE.png" (click)="announce('ROSE')">
-            <img alt="Obenabe" src="../../assets/match-types/UPSIDE_DOWN.png" (click)="announce('UPSIDE_DOWN')">
-            <img alt="Undenufe" src="../../assets/match-types/DOWNSIDE_UP.png" (click)="announce('DOWNSIDE_UP')">
-            <img alt="Gusti" src="../../assets/match-types/GUSTI.png" (click)="announce('GUSTI')">
-            <img alt="Merry" src="../../assets/match-types/MERRY.png" (click)="announce('MERRY')">
-            <img alt="Slalom (von oben)" src="../../assets/match-types/SLALOM_UP.png" (click)="announce('SLALOM_UP')">
-            <img alt="Slalom (von unten)" src="../../assets/match-types/SLALOM_DOWN.png" (click)="announce('SLALOM_DOWN')">
-        </mat-card-content>
-        <mat-card-actions><button mat-button (click)="push()">Schieben</button></mat-card-actions>
-    </mat-card>
+  <mat-card>
+    <mat-card-title>Du musst ansagen</mat-card-title>
+    <mat-card-content>
+      <img
+        alt="Eichel"
+        src="../../assets/match-types/ACORN.png"
+        (click)="announce('ACORN')"
+      />
+      <img
+        alt="Schelle"
+        src="../../assets/match-types/CLAMP.png"
+        (click)="announce('CLAMP')"
+      />
+      <img
+        alt="Schilte"
+        src="../../assets/match-types/SHIELD.png"
+        (click)="announce('SHIELD')"
+      />
+      <img
+        alt="Rose"
+        src="../../assets/match-types/ROSE.png"
+        (click)="announce('ROSE')"
+      />
+      <img
+        alt="Obenabe"
+        src="../../assets/match-types/UPSIDE_DOWN.png"
+        (click)="announce('UPSIDE_DOWN')"
+      />
+      <img
+        alt="Undenufe"
+        src="../../assets/match-types/DOWNSIDE_UP.png"
+        (click)="announce('DOWNSIDE_UP')"
+      />
+      <img
+        alt="Gusti"
+        src="../../assets/match-types/GUSTI.png"
+        (click)="announce('GUSTI')"
+      />
+      <img
+        alt="Merry"
+        src="../../assets/match-types/MERRY.png"
+        (click)="announce('MERRY')"
+      />
+      <img
+        alt="Slalom (von oben)"
+        src="../../assets/match-types/SLALOM_UP.png"
+        (click)="announce('SLALOM_UP')"
+      />
+      <img
+        alt="Slalom (von unten)"
+        src="../../assets/match-types/SLALOM_DOWN.png"
+        (click)="announce('SLALOM_DOWN')"
+      />
+    </mat-card-content>
+    <mat-card-actions
+      ><button mat-button (click)="push()">Schieben</button></mat-card-actions
+    >
+  </mat-card>
 </div>

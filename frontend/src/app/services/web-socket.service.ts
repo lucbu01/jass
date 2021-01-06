@@ -7,45 +7,52 @@ import { environment } from 'src/environments/environment';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class WebSocketService implements OnDestroy {
-
   private client = new RxStomp();
   private connectedUser?: string;
-  private currentConnectionTry = of(true).pipe(switchMap(() => {
-    const userId = this.userId;
-    if (this.client.connected() && this.connectedUser === userId) {
-      return of(true);
-    } else if (userId) {
-      return new Observable<boolean>(observer => {
-        this.client.configure({
-          brokerURL: `ws${location.protocol === 'https:' ? 's' : ''}://${location.host}/ws`,
-          connectHeaders: { user: this.userId as string },
-          reconnectDelay: 0
-        });
-        this.client.connected$.pipe(first()).subscribe(() => {
-          this.connectedUser = userId;
-          observer.next(true);
-          observer.complete();
-          if (environment.production) {
-            window.addEventListener('online', this.onlineEventListener);
-            window.addEventListener('focus', this.onlineEventListener);
-          }
-        });
-        this.client.stompErrors$.pipe(first()).subscribe(() => {
-          observer.next(false);
-          observer.complete();
-        });
-        this.client.deactivate().then(() => this.client.activate());
-      });
-    } else {
-      return of(false);
-    }
-  })).pipe(share());
+  private currentConnectionTry = of(true)
+    .pipe(
+      switchMap(() => {
+        const userId = this.userId;
+        if (this.client.connected() && this.connectedUser === userId) {
+          return of(true);
+        } else if (userId) {
+          return new Observable<boolean>((observer) => {
+            this.client.configure({
+              brokerURL: `ws${location.protocol === 'https:' ? 's' : ''}://${
+                location.host
+              }/ws`,
+              connectHeaders: { user: this.userId as string },
+              reconnectDelay: 0,
+            });
+            this.client.connected$.pipe(first()).subscribe(() => {
+              this.connectedUser = userId;
+              observer.next(true);
+              observer.complete();
+              if (environment.production) {
+                window.addEventListener('online', this.onlineEventListener);
+                window.addEventListener('focus', this.onlineEventListener);
+              }
+            });
+            this.client.stompErrors$.pipe(first()).subscribe(() => {
+              observer.next(false);
+              observer.complete();
+            });
+            this.client.deactivate().then(() => this.client.activate());
+          });
+        } else {
+          return of(false);
+        }
+      })
+    )
+    .pipe(share());
 
   constructor(private router: Router, private snack: MatSnackBar) {
-    this.event<{ message: string; redirectTo?: string }>('/user/private/messages').subscribe(message => {
+    this.event<{ message: string; redirectTo?: string }>(
+      '/user/private/messages'
+    ).subscribe((message) => {
       this.snack.open(message.message, undefined, { duration: 5000 });
       if (message.redirectTo) {
         this.router.navigateByUrl(message.redirectTo);
@@ -53,7 +60,7 @@ export class WebSocketService implements OnDestroy {
     });
   }
 
-  get userId(): string | undefined  {
+  get userId(): string | undefined {
     const userId = localStorage.getItem('userId');
     return userId ? userId : undefined;
   }
@@ -77,15 +84,25 @@ export class WebSocketService implements OnDestroy {
     window.removeEventListener('focus', this.onlineEventListener);
   }
 
-  send<T>(destination: string, body?: T, headers?: { [key: string]: any }): void {
+  send<T>(
+    destination: string,
+    body?: T,
+    headers?: { [key: string]: any }
+  ): void {
     this.sendString(destination, JSON.stringify(body), headers);
   }
 
-  sendString(destination: string, body: string, headers?: { [key: string]: any }): void {
-    this.tryConnect().subscribe(connected => {
+  sendString(
+    destination: string,
+    body: string,
+    headers?: { [key: string]: any }
+  ): void {
+    this.tryConnect().subscribe((connected) => {
       if (connected) {
         this.client.publish({
-          destination, body, headers
+          destination,
+          body,
+          headers,
         });
       } else {
         this.navigateToLoginPage();
@@ -94,18 +111,25 @@ export class WebSocketService implements OnDestroy {
   }
 
   event<T>(destination: string): Observable<T> {
-    return this.client.watch(destination).pipe(map(value => JSON.parse(value.body))).pipe(share());
+    return this.client
+      .watch(destination)
+      .pipe(map((value) => JSON.parse(value.body)))
+      .pipe(share());
   }
 
   data<T>(destination: string): Observable<T> {
-    return this.tryConnect().pipe(switchMap(connected => {
-      if (connected) {
-        return this.client.watch(destination).pipe(map(value => JSON.parse(value.body)));
-      } else {
-        this.navigateToLoginPage();
-        return EMPTY;
-      }
-    }));
+    return this.tryConnect().pipe(
+      switchMap((connected) => {
+        if (connected) {
+          return this.client
+            .watch(destination)
+            .pipe(map((value) => JSON.parse(value.body)));
+        } else {
+          this.navigateToLoginPage();
+          return EMPTY;
+        }
+      })
+    );
   }
 
   ngOnDestroy(): void {
@@ -121,7 +145,7 @@ export class WebSocketService implements OnDestroy {
   }
 
   private onlineEventListener = () => {
-    this.tryConnect().subscribe(connected => {
+    this.tryConnect().subscribe((connected) => {
       if (!connected) {
         this.navigateToLoginPage();
       }

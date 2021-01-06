@@ -1,6 +1,7 @@
 plugins {
 	id 'org.springframework.boot' version '2.4.0'
 	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+	id 'name.remal.sonarlint' version '1.1.6'
 	id 'java'
 }
 
@@ -41,4 +42,11 @@ dependencies {
 
 test {
 	useJUnitPlatform()
+}
+
+sonarlint {
+	excludes {
+		message 'java:S107'
+		message 'java:S5413'
+	}
 }

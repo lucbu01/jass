@@ -28,7 +28,7 @@ public class JassTeam {
 
 	@ManyToMany
 	@OrderBy("id")
-	private List<JassUser> users = new ArrayList<JassUser>();
+	private List<JassUser> users = new ArrayList<>();
 
 	public JassTeam(JassGame game, Byte index) {
 		this.game = game;
