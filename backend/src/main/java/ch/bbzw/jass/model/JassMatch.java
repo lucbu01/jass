@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
+import ch.bbzw.jass.helper.JassCards;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

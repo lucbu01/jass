@@ -2,7 +2,6 @@ package ch.bbzw.jass.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -37,7 +36,8 @@ public class JassRound {
 	}
 
 	public boolean isTheTurn(JassUser user) {
-		return user.getId().equals(getTurnOf().getId());
+		JassUser turnOf = getTurnOf();
+		return turnOf != null && user.getId().equals(turnOf.getId());
 	}
 
 	public JassUser getTurnOf() {
@@ -69,22 +69,6 @@ public class JassRound {
 	public JassUser calculateWinner() {
 		JassMove winnerMove = match.getType().calculateWinner(moves, getColor(), index);
 		return winnerMove.getUser();
-	}
-
-	public boolean canPlay(JassCard card) {
-		List<JassCard> hand = match.getHand(getTurnOf());
-		if (hand.contains(card)) {
-			JassColor color = getColor();
-			long count = hand.stream().filter(c -> c.getColor() == color).count();
-			boolean isTrumpUnder = false;
-			if (count == 1 && color == match.getType().getTrumpColor()) {
-				Optional<JassCard> colorCard = hand.stream().filter(c -> c.getColor() == color).findFirst();
-				isTrumpUnder = colorCard.isPresent() && colorCard.get().getValue() == JassValue.UNDER;
-			}
-			return color == null || color == card.getColor() || match.getType().getTrumpColor() == card.getColor()
-					|| count == 0 || isTrumpUnder;
-		}
-		return false;
 	}
 
 	public JassColor getColor() {

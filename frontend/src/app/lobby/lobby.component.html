@@ -4,7 +4,12 @@
       <mat-card-title>Spiel Lobby</mat-card-title>
       <mat-card-subtitle>BBZW Jass</mat-card-subtitle>
     </mat-card-header>
-    <mat-card-content>
+    <mat-card-content *ngIf="!game">
+      <div class="center">
+        <mat-spinner></mat-spinner>
+      </div>
+    </mat-card-content>
+    <mat-card-content *ngIf="game">
       <p>
         <mat-dialog-content>
           <mat-form-field appearance="fill">
@@ -13,7 +18,17 @@
               type="text"
               matInput
               readonly
-              [value]="game ? game.id : ''"
+              [value]="game.id"
+              (click)="invitationLinkClicked($event)"
+            />
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Einladungslink</mat-label>
+            <input
+              type="text"
+              matInput
+              readonly
+              [value]="getLink()"
               (click)="invitationLinkClicked($event)"
             />
           </mat-form-field>

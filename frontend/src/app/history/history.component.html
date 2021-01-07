@@ -1,0 +1,83 @@
+<div class="container">
+  <div class="spinner-container" *ngIf="!history && !notFound">
+    <mat-spinner></mat-spinner>
+  </div>
+  <div class="history-container" *ngIf="history">
+    <div *ngIf="history.winnerTeam" class="splitter margin">
+      <h1>Gewinner:</h1>
+      <h2>
+        {{ history.winnerTeam.players[0].name }} &
+        {{ history.winnerTeam.players[1].name }}
+      </h2>
+    </div>
+    <div *ngIf="!history.winnerTeam" class="splitter margin">
+      <h1>Unentschieden</h1>
+    </div>
+    <mat-card>
+      <mat-card-title>Team 1</mat-card-title>
+      <mat-card-subtitle
+        >{{ history.teams[0].players[0].name }} &
+        {{ history.teams[0].players[1].name }}</mat-card-subtitle
+      >
+      <mat-card-content> {{ history.teamOnePoints }} Punkte </mat-card-content>
+    </mat-card>
+    <mat-card>
+      <mat-card-title>Team 2</mat-card-title>
+      <mat-card-subtitle
+        >{{ history.teams[1].players[0].name }} &
+        {{ history.teams[1].players[1].name }}</mat-card-subtitle
+      >
+      <mat-card-content> {{ history.teamTwoPoints }} Punkte </mat-card-content>
+    </mat-card>
+    <div class="splitter-margin"></div>
+    <ng-container *ngFor="let match of history.matches; let i = index">
+      <div class="splitter margin"></div>
+      <mat-divider class="splitter margin"></mat-divider>
+      <mat-card>
+        <mat-card-title>Match {{ i + 1 }}</mat-card-title>
+        <mat-card-content>
+          <div *ngIf="match.announcer.id !== match.definitiveAnnouncer.id">
+            <p>
+              {{ match.announcer.name }} hat geschoben und
+              {{ match.definitiveAnnouncer.name }} hat angesagesagt
+            </p>
+          </div>
+          <div *ngIf="match.announcer.id === match.definitiveAnnouncer.id">
+            <p>{{ match.announcer.name }} hat angesagt</p>
+          </div>
+          <img src="../../assets/match-types/{{ match.type }}.png" />
+          <p>Team 1: {{ match.teamOnePoints }}</p>
+          <p>Team 2: {{ match.teamTwoPoints }}</p>
+        </mat-card-content>
+      </mat-card>
+      <div class="splitter margin"></div>
+      <ng-container *ngFor="let round of match.rounds; let i = index">
+        <h2 class="splitter">
+          Runde {{ i + 1 }} (Gewinner: {{ round.winner.name }})
+        </h2>
+        <div class="card" *ngFor="let move of round.moves">
+          <p>
+            <img
+              src="../../assets/cards/{{ move.card.color }}_{{
+                move.card.value
+              }}.png"
+            />
+          </p>
+          <h3>{{ move.player.name }}</h3>
+        </div>
+        <div class="splitter margin"></div>
+      </ng-container>
+    </ng-container>
+    <div class="splitter margin"></div>
+    <mat-divider class="splitter margin"></mat-divider>
+    <button mat-raised-button color="primary" routerLink="/">
+      Zurück zur Startseite
+    </button>
+  </div>
+  <div class="not-found-container" *ngIf="notFound">
+    <h1 class="splitter">Die Spielzusammenfassung wurde nicht gefunden</h1>
+    <button mat-raised-button color="primary" routerLink="/">
+      Zurück zur Startseite
+    </button>
+  </div>
+</div>

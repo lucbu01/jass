@@ -1,9 +1,13 @@
-package ch.bbzw.jass.model;
+package ch.bbzw.jass.helper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import ch.bbzw.jass.model.JassCard;
+import ch.bbzw.jass.model.JassColor;
+import ch.bbzw.jass.model.JassValue;
 
 public class JassCards {
 

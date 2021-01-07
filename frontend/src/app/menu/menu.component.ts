@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { WebSocketService } from '../services/web-socket.service';
 import { Subscription } from 'rxjs';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { JoinDialogComponent } from './join-dialog/join-dialog.component';
 
@@ -14,16 +14,21 @@ import { JoinDialogComponent } from './join-dialog/join-dialog.component';
 export class MenuComponent implements OnInit, OnDestroy {
   name = '';
   subscriptions: Subscription[] = [];
+  redirectTo: string | undefined;
 
   constructor(
     private http: HttpClient,
     private webSocketService: WebSocketService,
     private router: Router,
+    private route: ActivatedRoute,
     private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
     this.subscriptions.push(
+      this.route.queryParams.subscribe(
+        (params) => (this.redirectTo = params.redirectTo)
+      ),
       this.webSocketService
         .tryConnect()
         .subscribe((result) => console.log(`WebSocket connected: ${result}`)),
@@ -45,16 +50,20 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   join(): void {
-    this.setUsername(() =>
-      this.dialog
-        .open(JoinDialogComponent)
-        .afterClosed()
-        .subscribe((data) => {
-          if (data) {
-            this.router.navigate(['/lobby', data]);
-          }
-        })
-    );
+    this.setUsername(() => {
+      if (this.redirectTo) {
+        this.router.navigateByUrl(this.redirectTo);
+      } else {
+        this.dialog
+          .open(JoinDialogComponent)
+          .afterClosed()
+          .subscribe((data) => {
+            if (data) {
+              this.router.navigate(['/lobby', data]);
+            }
+          });
+      }
+    });
   }
 
   setUsername(callback: () => void): void {

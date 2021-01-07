@@ -10,10 +10,10 @@ import { WebSocketService } from '../services/web-socket.service';
   styleUrls: ['./playground.component.scss'],
 })
 export class PlaygroundComponent implements OnInit {
-  playerName1 = 'player1';
-  playerName2 = 'player2';
-  playerName3 = 'player3';
-  playerName4 = 'player4';
+  playerName1 = 'Spieler 1';
+  playerName2 = 'Spieler 2';
+  playerName3 = 'Spieler 3';
+  playerName4 = 'Spieler 4';
   scoreTeam1 = 0;
   scoreTeam2 = 0;
   playedCard: string | undefined = undefined;
@@ -25,9 +25,15 @@ export class PlaygroundComponent implements OnInit {
   gameSubscription?: Subscription;
   handSubscription?: Subscription;
   hand: any = [];
-  game: any = {};
+  game: any;
   hasToAnnounce = false;
   playerIds: string[] = [];
+  playerNames: string[] = [];
+  myName = 'Ich';
+  namePartner = 'Partner';
+  nameOpponent1 = 'Gegner 1';
+  nameOpponent2 = 'Gegner 2';
+  hint = 'Jass Spiel laden . . .';
   myIndex = 0;
 
   constructor(
@@ -53,6 +59,12 @@ export class PlaygroundComponent implements OnInit {
           this.gameSubscription = this.webSocketService
             .data<any>(`/public/game/${data.id}`)
             .subscribe((game) => {
+              if (game.scoreboard && game.scoreboard.finished) {
+                this.router.navigate(['history', game.id]);
+              }
+              if (game.started === false) {
+                this.router.navigate(['lobby', game.id]);
+              }
               if (!this.handSubscription) {
                 this.handSubscription = this.webSocketService
                   .data<any>(`/user/private/game/${game.id}/hand`)
@@ -60,7 +72,7 @@ export class PlaygroundComponent implements OnInit {
                     this.hand = hand;
                   });
               }
-              this.game = this.assignDeep(this.game, game);
+              this.game = this.assignDeep(this.game ? this.game : {}, game);
               this.playerName1 = this.game.teams[0].players[0].name;
               this.playerName2 = this.game.teams[0].players[1].name;
               this.playerName3 = this.game.teams[1].players[0].name;
@@ -76,16 +88,40 @@ export class PlaygroundComponent implements OnInit {
                   this.webSocketService.userId?.split(':')[0]
                 );
               }
-              if (game.match) {
+              this.playerNames = [
+                this.game.teams[0].players[0].name,
+                this.game.teams[1].players[0].name,
+                this.game.teams[0].players[1].name,
+                this.game.teams[1].players[1].name,
+              ];
+              this.myName = this.getPlayerName(0);
+              this.nameOpponent2 = this.getPlayerName(1);
+              this.namePartner = this.getPlayerName(2);
+              this.nameOpponent1 = this.getPlayerName(3);
+              this.hint = '';
+              if (game.match && !game.match.type) {
                 if (
-                  !game.match.type &&
                   this.playerIds[this.myIndex] ===
-                    game.match.definitiveAnnouncer.id
+                  game.match.definitiveAnnouncer.id
                 ) {
                   this.hasToAnnounce = true;
+                  this.hint = 'Du darfst ansagen';
+                } else {
+                  this.hasToAnnounce = false;
+                  this.hint = `${game.match.definitiveAnnouncer.name} darf ansagen`;
                 }
               }
               if (game.round) {
+                if (game.round.turnOf) {
+                  if (
+                    this.webSocketService.userId?.split(':')[0] ===
+                    game.round.turnOf.id
+                  ) {
+                    this.hint = 'Du bist an der Reihe';
+                  } else {
+                    this.hint = `${game.round.turnOf.name} ist an der Reihe`;
+                  }
+                }
                 this.playedCard = this.getCard(0);
                 this.playedCardOpponent2 = this.getCard(1);
                 this.playedCardMate = this.getCard(2);
@@ -151,5 +187,9 @@ export class PlaygroundComponent implements OnInit {
     } else {
       return '';
     }
+  }
+
+  getPlayerName(myIndexPlus: number): string {
+    return this.playerNames[this.indexOf(myIndexPlus)];
   }
 }

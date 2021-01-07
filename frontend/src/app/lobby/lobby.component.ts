@@ -20,23 +20,25 @@ export class LobbyComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.subscriptions.push(
-      this.route.params.subscribe((data) => {
-        if (this.gameSubscription) {
-          this.gameSubscription.unsubscribe();
-        }
-        if (data.id) {
-          this.gameSubscription = this.webSocketService
-            .data<any>(`/public/game/${data.id}`)
-            .subscribe((game) => {
-              this.game = game;
-              if (this.game.started) {
-                this.router.navigate(['/play', this.game.id]);
-                console.log(`Game ${this.game.id} started!`);
-              }
-            });
-        }
-      })
+    setTimeout(() =>
+      this.subscriptions.push(
+        this.route.params.subscribe((data) => {
+          if (this.gameSubscription) {
+            this.gameSubscription.unsubscribe();
+          }
+          if (data.id) {
+            this.gameSubscription = this.webSocketService
+              .data<any>(`/public/game/${data.id}`)
+              .subscribe((game) => {
+                this.game = game;
+                if (this.game.started) {
+                  this.router.navigate(['/play', this.game.id]);
+                  console.log(`Game ${this.game.id} started!`);
+                }
+              });
+          }
+        })
+      )
     );
   }
 
@@ -63,5 +65,9 @@ export class LobbyComponent implements OnInit, OnDestroy {
 
   invitationLinkClicked(event: Event): void {
     (event.target as HTMLInputElement).select();
+  }
+
+  getLink(): string {
+    return `${location.protocol}//${location.host}/lobby/${this.game.id}`;
   }
 }

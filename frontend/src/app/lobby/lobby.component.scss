@@ -4,5 +4,18 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: green;
+  background-color: #349255;
+
+  mat-card {
+    width: 500px;
+
+    .center {
+      background: none;
+    }
+
+    mat-form-field {
+      width: 100%;
+      display: block;
+    }
+  }
 }
