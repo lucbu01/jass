@@ -6,11 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+@ExtendWith(EasyMockExtension.class)
 class JassMatchTypeTest {
 
 	JassTeam team1;
