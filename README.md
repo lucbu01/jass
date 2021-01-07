@@ -15,5 +15,5 @@ https://bbzw-jass.herokuapp.com/
 ## Pull Request Vorschau auf Heroku
 https://bbzw-jass-dev.herokuapp.com/
 
-## IDE Aufsetzen
-[Im Wiki anzeigen](https://github.com/lucbu01/jass/wiki/IDEs-aufsetzen)
+## Dokumentation / Wiki
+[Wiki anzeigen](https://github.com/lucbu01/jass/wiki)
