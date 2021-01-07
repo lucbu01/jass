@@ -6,17 +6,17 @@
     <mat-card-content>
       <mat-form-field appearance="fill">
         <mat-label>Name</mat-label>
-        <input matInput [(ngModel)]="name" required/>
+        <input matInput [(ngModel)]="name"/>
       </mat-form-field>
     </mat-card-content>
     <mat-card-actions>
-      <button *ngIf="!redirectTo" mat-button color="primary" (click)="create()">
+      <button *ngIf="!redirectTo" mat-button color="primary" (click)="create()" [disabled]="name === ''">
         Privates Spiel erstellen
       </button>
-      <button *ngIf="!redirectTo" mat-button (click)="createPublic()">
+      <button *ngIf="!redirectTo" mat-button (click)="createPublic()" [disabled]="name === ''">
         Öffentliches Spiel erstellen
       </button>
-      <button mat-button color="accent" (click)="join()">
+      <button mat-button color="accent" (click)="join()" [disabled]="name === ''">
         Spiel beitreten
       </button>
     </mat-card-actions>
