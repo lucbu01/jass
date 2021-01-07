@@ -15,6 +15,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatListModule } from '@angular/material/list';
 import { HttpClientModule } from '@angular/common/http';
 import { WebSocketService } from './services/web-socket.service';
 import { PlaygroundComponent } from './playground/playground.component';
@@ -46,6 +47,7 @@ import { HistoryComponent } from './history/history.component';
     MatProgressSpinnerModule,
     MatDividerModule,
     MatTooltipModule,
+    MatListModule,
     HttpClientModule,
   ],
   providers: [WebSocketService],

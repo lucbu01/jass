@@ -49,6 +49,12 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.setUsername(() => this.webSocketService.send('/public/game/create'));
   }
 
+  createPublic(): void {
+    this.setUsername(() =>
+      this.webSocketService.send('/public/game/create-public')
+    );
+  }
+
   join(): void {
     this.setUsername(() => {
       if (this.redirectTo) {

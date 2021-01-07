@@ -68,7 +68,7 @@ class JassGameServiceTest {
 		expect(game.getId()).andReturn(UUID.fromString("f4844da0-dc00-4c1b-a2b4-f8c4f1949c72"));
 		replay(game, gameRepository, teamRepository, matchRepository, roundRepository, moveRepository, userService);
 
-		UUID gameId = testee.createNewGame();
+		UUID gameId = testee.createNewGame(false);
 
 		verify(game, gameRepository, teamRepository, matchRepository, roundRepository, moveRepository, userService);
 		assertEquals(UUID.fromString("f4844da0-dc00-4c1b-a2b4-f8c4f1949c72"), gameId);
