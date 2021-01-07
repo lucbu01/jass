@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { Game } from 'src/model/model';
 import { WebSocketService } from '../services/web-socket.service';
 
 @Component({
@@ -9,7 +10,7 @@ import { WebSocketService } from '../services/web-socket.service';
   styleUrls: ['./lobby.component.scss'],
 })
 export class LobbyComponent implements OnInit, OnDestroy {
-  game: any;
+  game?: Game;
   subscriptions: Subscription[] = [];
   gameSubscription?: Subscription;
 
@@ -28,12 +29,12 @@ export class LobbyComponent implements OnInit, OnDestroy {
           }
           if (data.id) {
             this.gameSubscription = this.webSocketService
-              .data<any>(`/public/game/${data.id}`)
+              .data<Game>(`/public/game/${data.id}`)
               .subscribe((game) => {
                 this.game = game;
                 if (this.game.started) {
-                  this.router.navigate(['/play', this.game.id]);
-                  console.log(`Game ${this.game.id} started!`);
+                  this.router.navigate(['/play', game.id]);
+                  console.log(`Game ${game.id} started!`);
                 }
               });
           }
@@ -50,17 +51,22 @@ export class LobbyComponent implements OnInit, OnDestroy {
   }
 
   start(): void {
-    if (this.canStart()) {
+    if (this.game && this.canStart()) {
       this.webSocketService.send(`/public/game/${this.game.id}/start`);
     }
   }
 
   canStart(): boolean {
-    return (
+    if (
       this.game &&
+      this.game.teams &&
       this.game.teams[0].players.length === 2 &&
       this.game.teams[1].players.length === 2
-    );
+    ) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   invitationLinkClicked(event: Event): void {
@@ -68,6 +74,10 @@ export class LobbyComponent implements OnInit, OnDestroy {
   }
 
   getLink(): string {
-    return `${location.protocol}//${location.host}/lobby/${this.game.id}`;
+    if (this.game) {
+      return `${location.protocol}//${location.host}/lobby/${this.game.id}`;
+    } else {
+      return '';
+    }
   }
 }

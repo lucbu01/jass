@@ -5,6 +5,7 @@ import { RxStomp } from '@stomp/rx-stomp';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Message } from 'src/model/model';
 
 @Injectable({
   providedIn: 'root',
@@ -50,9 +51,7 @@ export class WebSocketService implements OnDestroy {
     .pipe(share());
 
   constructor(private router: Router, private snack: MatSnackBar) {
-    this.event<{ message: string; redirectTo?: string }>(
-      '/user/private/messages'
-    ).subscribe((message) => {
+    this.event<Message>('/user/private/messages').subscribe((message) => {
       this.snack.open(message.message, undefined, { duration: 5000 });
       if (message.redirectTo) {
         this.router.navigateByUrl(message.redirectTo);
