@@ -1,5 +1,19 @@
 <form [formGroup]="form" (ngSubmit)="join()">
   <h2>Spiel beitreten</h2>
+  <div mat-subheader>Öffentliche Spiele</div>
+  <mat-list>
+    <mat-list-item
+      *ngFor="let game of games; let last = last"
+      (click)="joinPublic(game)"
+    >
+      <div>{{ game.creator }} ({{ game.players }} Spieler)</div>
+      <mat-divider *ngIf="!last"></mat-divider>
+    </mat-list-item>
+  </mat-list>
+  <p>
+    <mat-divider></mat-divider>
+  </p>
+  <div mat-subheader>oder:</div>
   <mat-dialog-content>
     <mat-form-field appearance="fill">
       <mat-label>Einladungscode</mat-label>
