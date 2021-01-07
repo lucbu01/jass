@@ -20,11 +20,17 @@ import lombok.NoArgsConstructor;
 public class JassGame {
 	public static final int WIN_POINTS = 3000;
 
+	public JassGame(boolean isPublic) {
+		this.publicGame = isPublic;
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 
-	private Boolean started;
+	private boolean started = false;
+
+	private boolean publicGame = false;
 
 	@OneToMany(mappedBy = "game")
 	@OrderBy("index")
@@ -75,11 +81,11 @@ public class JassGame {
 		JassTeam teamTwo = getTeams().get(1);
 		return calculatePointsOfTeam(teamTwo);
 	}
-	
+
 	public boolean isFinished() {
 		return calculatePointsOfTeamOne() >= WIN_POINTS || calculatePointsOfTeamTwo() >= WIN_POINTS;
 	}
-	
+
 	public JassTeam getWinnerTeam() {
 		if (calculatePointsOfTeamOne() >= WIN_POINTS) {
 			if (calculatePointsOfTeamTwo() < WIN_POINTS) {
@@ -90,4 +96,5 @@ public class JassGame {
 		}
 		return null;
 	}
+
 }

@@ -5,6 +5,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -30,6 +31,7 @@ import ch.bbzw.jass.model.JassUser;
 import ch.bbzw.jass.model.JassValue;
 import ch.bbzw.jass.model.dto.GameDto;
 import ch.bbzw.jass.model.dto.MessageDto;
+import ch.bbzw.jass.model.dto.PublicGameDto;
 import ch.bbzw.jass.repository.JassGameRepository;
 import ch.bbzw.jass.repository.JassHandRepository;
 import ch.bbzw.jass.repository.JassMatchRepository;
@@ -69,8 +71,8 @@ public class JassGameService {
 		this.userService = userService;
 	}
 
-	public UUID createNewGame() {
-		JassGame game = gameRepository.save(new JassGame());
+	public UUID createNewGame(boolean isPublic) {
+		JassGame game = gameRepository.save(new JassGame(isPublic));
 		JassTeam team1 = new JassTeam(game, (byte) 0);
 		JassTeam team2 = new JassTeam(game, (byte) 1);
 		team1.getUsers().add(userService.getUser());
@@ -92,8 +94,11 @@ public class JassGameService {
 				throw new MessageException(new MessageDto("Das Spiel ist bereits voll", "/"));
 			}
 			team.getUsers().add(userService.getUser());
-			teamRepository.save(team);
+			teamRepository.saveAndFlush(team);
 			update(gameId, new GameDto(game));
+		}
+		if (game.isPublicGame()) {
+			updatePublic(game);
 		}
 		return new GameDto(game, true);
 	}
@@ -104,6 +109,9 @@ public class JassGameService {
 			game.setStarted(true);
 			gameRepository.save(game);
 			update(id, new GameDto(game));
+			if (game.isPublicGame()) {
+				updatePublic(game);
+			}
 			mix(game);
 		} else {
 			throw new MessageException(new MessageDto("Spiel muss 4 Spieler enthalten", "/"));
@@ -166,7 +174,7 @@ public class JassGameService {
 		JassUser user = userService.getUser();
 		JassRound round;
 
-		if (game.getStarted() == null || game.getStarted().equals(false)) {
+		if (!game.isStarted()) {
 			throw new MessageException(new MessageDto("Das Spiel wurde noch nicht gestartet", "/lobby/" + gameId));
 		}
 		if (match.getType() == null) {
@@ -267,8 +275,26 @@ public class JassGameService {
 		}
 	}
 
-	public void update(UUID gameId, GameDto game) {
+	public List<PublicGameDto> getPublicGames() {
+		return gameRepository.findByPublicGameAndStarted(true, false).stream().map(PublicGameDto::new)
+				.collect(Collectors.toList());
+	}
+
+	private void update(UUID gameId, GameDto game) {
 		webSocket.convertAndSend("/public/game/" + gameId, game);
+	}
+
+	private void updatePublic(JassGame updatedGame) {
+		List<PublicGameDto> publicGames = getPublicGames().stream().map(pg -> {
+			if (pg.getId().equals(updatedGame.getId())) {
+				return new PublicGameDto(updatedGame);
+			}
+			return pg;
+		}).collect(Collectors.toList());
+		if (publicGames.stream().noneMatch(pg -> pg.getId().equals(updatedGame.getId()))) {
+			publicGames.add(new PublicGameDto(updatedGame));
+		}
+		webSocket.convertAndSend("/public/games", publicGames);
 	}
 
 	private void message(JassGame game, MessageDto message) {

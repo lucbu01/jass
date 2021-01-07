@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
+import { WebSocketService } from 'src/app/services/web-socket.service';
 
 @Component({
   selector: 'app-join-dialog',
@@ -12,13 +13,28 @@ export class JoinDialogComponent implements OnInit {
     gameId: new FormControl('', Validators.required),
   });
 
-  constructor(public dialogRef: MatDialogRef<JoinDialogComponent>) {}
+  games: any[] = [];
 
-  ngOnInit(): void {}
+  constructor(
+    public dialogRef: MatDialogRef<JoinDialogComponent>,
+    public webSocketService: WebSocketService
+  ) {}
+
+  ngOnInit(): void {
+    this.webSocketService
+      .data<any[]>('/public/games')
+      .subscribe(
+        (games) => (this.games = games.filter((game) => game.players < 4))
+      );
+  }
 
   join(): void {
     if (this.form.valid) {
       this.dialogRef.close(this.form.value.gameId);
     }
+  }
+
+  joinPublic(game: any): void {
+    this.dialogRef.close(game.id);
   }
 }

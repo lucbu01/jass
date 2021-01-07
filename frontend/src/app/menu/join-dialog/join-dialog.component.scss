@@ -1,0 +1,12 @@
+mat-list {
+  max-height: 200px;
+  overflow: auto;
+
+  mat-list-item:hover {
+    background-color: lightgray;
+  }
+}
+
+mat-form-field {
+  width: 300px;
+}

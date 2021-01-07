@@ -31,7 +31,7 @@ public class GameDto {
 	public GameDto(JassGame game, boolean full) {
 		this.id = game.getId();
 		this.teams = game.getTeams().stream().map(TeamDto::new).collect(Collectors.toList());
-		this.started = game.getStarted();
+		this.started = game.isStarted();
 		if (full && !game.getMatches().isEmpty()) {
 			JassMatch m = game.getMatches().get(game.getMatches().size() - 1);
 			this.match = new MatchDto(m.getIndex(), new PlayerDto(m.getAnnouncer()),
@@ -54,7 +54,7 @@ public class GameDto {
 	}
 
 	public GameDto(JassRound round, boolean scoreboard) {
-		if (scoreboard) {			
+		if (scoreboard) {
 			this.scoreboard = new ScoreboardDto(round.getMatch().getGame());
 		}
 		this.round = new RoundDto(round);

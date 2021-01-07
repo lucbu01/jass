@@ -19,20 +19,32 @@ import ch.bbzw.jass.model.JassCard;
 import ch.bbzw.jass.model.JassMatchType;
 import ch.bbzw.jass.model.dto.GameDto;
 import ch.bbzw.jass.model.dto.MessageDto;
+import ch.bbzw.jass.model.dto.PublicGameDto;
 import ch.bbzw.jass.service.JassGameService;
 
 @Controller
 public class JassGameController {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(JassGameController.class);
-	
+
 	@Autowired
 	JassGameService gameService;
 
 	@MessageMapping("/game/create")
 	@SendToUser("/private/game/created")
 	public UUID createGame() {
-		return gameService.createNewGame();
+		return gameService.createNewGame(false);
+	}
+
+	@MessageMapping("/game/create-public")
+	@SendToUser("/private/game/created")
+	public UUID createPublicGame() {
+		return gameService.createNewGame(true);
+	}
+
+	@SubscribeMapping("/games")
+	public List<PublicGameDto> getPublicGames() {
+		return gameService.getPublicGames();
 	}
 
 	@SubscribeMapping("/game/{id}")
