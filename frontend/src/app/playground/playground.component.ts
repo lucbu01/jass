@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Card } from 'src/model/card';
+import { Card, Game } from 'src/model/model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { WebSocketService } from '../services/web-socket.service';
@@ -20,12 +20,11 @@ export class PlaygroundComponent implements OnInit {
   playedCardMate: string | undefined = undefined;
   playedCardOpponent1: string | undefined = undefined;
   playedCardOpponent2: string | undefined = undefined;
-  cards: Card[] = [];
   subscriptions: Subscription[] = [];
   gameSubscription?: Subscription;
   handSubscription?: Subscription;
-  hand: any = [];
-  game: any;
+  hand: Card[] = [];
+  game?: Game;
   hasToAnnounce = false;
   playerIds: string[] = [];
   playerNames: string[] = [];
@@ -57,17 +56,14 @@ export class PlaygroundComponent implements OnInit {
             this.gameSubscription.unsubscribe();
           }
           this.gameSubscription = this.webSocketService
-            .data<any>(`/public/game/${data.id}`)
+            .data<Game>(`/public/game/${data.id}`)
             .subscribe((game) => {
               if (game.scoreboard && game.scoreboard.finished) {
                 this.router.navigate(['history', game.id]);
               }
-              if (game.started === false) {
-                this.router.navigate(['lobby', game.id]);
-              }
               if (!this.handSubscription) {
                 this.handSubscription = this.webSocketService
-                  .data<any>(`/user/private/game/${game.id}/hand`)
+                  .data<Card[]>(`/user/private/game/${game.id}/hand`)
                   .subscribe((hand) => {
                     this.hand = hand;
                   });
@@ -128,8 +124,8 @@ export class PlaygroundComponent implements OnInit {
                 this.playedCardOpponent1 = this.getCard(3);
               }
               if (game.scoreboard) {
-                this.scoreTeam1 = this.game.scoreboard.teamOnePoints;
-                this.scoreTeam2 = this.game.scoreboard.teamTwoPoints;
+                this.scoreTeam1 = game.scoreboard.teamOnePoints;
+                this.scoreTeam2 = game.scoreboard.teamTwoPoints;
               }
             });
         }
@@ -137,7 +133,7 @@ export class PlaygroundComponent implements OnInit {
     );
   }
 
-  assignDeep(target: any, source: any) {
+  assignDeep(target: any, source: any): Game {
     Object.keys(source).forEach((key) => {
       const targetValue = target[key];
       const sourceValue = source[key];
@@ -156,17 +152,23 @@ export class PlaygroundComponent implements OnInit {
   }
 
   cardClick(card: Card): void {
-    this.webSocketService.send(`/public/game/${this.game.id}/play`, card);
+    if (this.game) {
+      this.webSocketService.send(`/public/game/${this.game.id}/play`, card);
+    }
   }
 
   push(): void {
-    this.webSocketService.send(`/public/game/${this.game.id}/push`);
-    this.hasToAnnounce = false;
+    if (this.game) {
+      this.webSocketService.send(`/public/game/${this.game.id}/push`);
+      this.hasToAnnounce = false;
+    }
   }
 
   announce(type: string): void {
-    this.webSocketService.send(`/public/game/${this.game.id}/announce`, type);
-    this.hasToAnnounce = false;
+    if (this.game) {
+      this.webSocketService.send(`/public/game/${this.game.id}/announce`, type);
+      this.hasToAnnounce = false;
+    }
   }
 
   indexOf(myIndexPlus: number): number {
@@ -178,15 +180,18 @@ export class PlaygroundComponent implements OnInit {
   }
 
   getCard(myIndexPlus: number): string {
-    const moves: any[] = this.game.round.moves;
-    const move = moves.find(
-      (mv) => mv.player.id === this.playerIds[this.indexOf(myIndexPlus)]
-    );
-    if (move) {
-      return `${move.card.color}_${move.card.value}`;
-    } else {
-      return '';
+    if (this.game && this.game.round) {
+      const moves: any[] = this.game.round.moves;
+      const move = moves.find(
+        (mv) => mv.player.id === this.playerIds[this.indexOf(myIndexPlus)]
+      );
+      if (move) {
+        return `${move.card.color}_${move.card.value}`;
+      } else {
+        return '';
+      }
     }
+    return '';
   }
 
   getPlayerName(myIndexPlus: number): string {
